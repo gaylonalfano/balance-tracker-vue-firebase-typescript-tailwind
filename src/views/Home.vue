@@ -68,17 +68,17 @@ export default defineComponent({
 
     // Create 'login' custom event handler to redirect to /dashboard/user
     // NOTE If user was passed via context.emit() payload, then add as arg to this handler
-    // Q: Do I need to define currentCtxUser outside of enterDashboard()? Then return so can use in template?
-    // A: No! Just pass currentCtxUser consistent with how you emit it (directly or within payload object)
+    // Q: Do I need to define user outside of enterDashboard()? Then return so can use in template?
+    // A: No! Just pass user consistent with how you emit it (directly or within payload object)
     // Let's receive our emitted payload as an argument to our custom event handler
     // @ts-ignore
     function enterDashboard(user) {
       // Q: How to find out which event was triggered (login vs. signup)?
       // A: It's a normal event listener so we have access to 'event'
       console.log("enterDashboard fired for @login or @signup event");
-      console.log("Welcome:enterDashboard:currentCtxUser: ", user);
+      console.log("Home:enterDashboard:user: ", user);
       // console.log(context); // Nope. {expose: f}
-      // console.log(context.attrs["currentCtxUser"]); // Nope. undefined
+      // console.log(context.attrs["user"]); // Nope. undefined
       router.push({ name: "Dashboard" });
       // Q: How to get the user details passed as well? Use context?
       // A: No! We still need to use Firebase methods to get the User, etc. but

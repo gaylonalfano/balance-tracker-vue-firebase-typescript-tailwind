@@ -58,7 +58,9 @@
         />
       </div>
     </div>
-
+    <div v-if="error">
+      <h3 class="text-sm font-medium text-red-700">{{ error }}</h3>
+    </div>
     <div>
       <button
         type="submit"
@@ -88,7 +90,6 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { auth } from "@/firebase/config";
 import useSignup from "@/composables/useSignup";
 
 export default defineComponent({
@@ -109,7 +110,7 @@ export default defineComponent({
   },
   setup(props, context) {
     // Extract composable functionality
-    const { signup, error, isPending } = useSignup();
+    const { signup, error } = useSignup();
 
     // Create some bound data properties for form inputs
     const displayName = ref<string>("");
@@ -118,18 +119,30 @@ export default defineComponent({
 
     // Form submit handler
     async function handleSignup() {
-      // console.log(displayName.value, email.value, password.value);
-      await signup(email.value, password.value, displayName.value);
+      // UPDATE If you save 'response' then you can get the user via
+      // response.user (instead of via auth.currentUser)
+      // Testing whether I can get user from response object instead
+      // of auth.currentUser
+      const response = await signup(
+        email.value,
+        password.value,
+        displayName.value
+      );
+      // Works but need auth.currentUser since you're not saving response
+      // await signup(email.value, password.value, displayName.value);
 
       // Confirm successful and context.emit("signup") to Parent
       if (!error.value) {
         // Need emit custom event and auth user
-        const user = auth.currentUser;
-        context.emit("signup", user);
+        // Q: Could we get user from the await signup() response?
+        // A: Yes! You can use response?.user to achieve the same thing
+        // const user = auth.currentUser;
+        // context.emit("signup", user);
+        context.emit("signup", response?.user);
       }
     }
 
-    return { handleSignup, displayName, email, password };
+    return { handleSignup, displayName, email, password, error };
   },
 });
 </script>

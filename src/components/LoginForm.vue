@@ -15,12 +15,13 @@
   }
   ```
 -->
-  <form class="mt-8 space-y-6">
+  <form @submit.prevent="handleLogin" class="mt-8 space-y-6">
     <input type="hidden" name="remember" value="true" />
     <div class="rounded-md shadow-sm -space-y-px">
       <div>
         <label for="email-address" class="sr-only">Email address</label>
         <input
+          v-model="email"
           id="email-address"
           name="email"
           type="email"
@@ -33,6 +34,7 @@
       <div>
         <label for="password" class="sr-only">Password</label>
         <input
+          v-model="password"
           id="password"
           name="password"
           type="password"
@@ -43,7 +45,9 @@
         />
       </div>
     </div>
-
+    <div v-if="error">
+      <h3 class="text-sm font-medium text-red-800">{{ error }}</h3>
+    </div>
     <div>
       <button
         type="submit"
@@ -72,10 +76,48 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
+import { defineComponent, ref } from "vue";
+import useLogin from "@/composables/useLogin";
 
 export default defineComponent({
   name: "LoginForm",
+  emits: {
+    login(user) {
+      console.log("login function payload VALIDATION: ", user);
+      return !!user;
+    },
+  },
+  setup(props, context) {
+    // Extract composable functionality
+    const { login, error, isPending } = useLogin();
+
+    // Create some bound data properties for form inputs
+    const email = ref<string>("");
+    const password = ref<string>("");
+
+    // Form submit handler
+    async function handleLogin() {
+      // UPDATE If you save 'response' then you can get the user via
+      // response.user (instead of via auth.currentUser)
+      // Testing whether I can get user from response object instead
+      // of auth.currentUser
+      const response = await login(email.value, password.value);
+      // Works but need auth.currentUser since you're not saving response
+      // await login(email.value, password.value);
+
+      // Confirm successful and context.emit("login") to Parent
+      if (!error.value) {
+        // Need emit custom event and auth user
+        // Q: Could we get user from the await login() response?
+        // A: Yes! You can use response?.user to achieve the same thing
+        // const user = auth.currentUser;
+        // context.emit("login", user);
+        context.emit("login", response?.user);
+      }
+    }
+
+    return { handleLogin, email, password, error };
+  },
 });
 </script>
 

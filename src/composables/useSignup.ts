@@ -22,23 +22,14 @@ async function signup(email: string, password: string, displayName: string) {
     if (!response) {
       throw new Error("Could not complete signup.");
     }
-    // Log the user object
-    // console.log(response);
-    // console.log(response.user);
 
     // Let's update the displayName since it's undefined when first registering
     // via auth.createUserWithEmailAndPassword().
     // NOTE Use await to process this.
     await response.user?.updateProfile({ displayName });
 
-    // Let's reset error.value to undefined in case it has another value (err.message)
-    // FIXME I don't believe this is actually necessary because we reset
-    // error.value at the top each time this function is invoked.
-    // error.value = undefined;
-
     // Let's return the response object so we can do other things with it.
     // NOTE response is Type firebase.auth.UserCredential
-
     isPending.value = false;
     return response;
   } catch (err) {
