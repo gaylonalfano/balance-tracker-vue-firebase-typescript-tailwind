@@ -1,19 +1,19 @@
 <template>
   <Navbar />
-  <div v-if="members">
-    <div v-for="member in members" :key="member.id">
-      <h2>name: {{ member.name }}</h2>
-      <h2>tracker: {{ member.trackerOwner }}</h2>
-      <div v-for="account in member.accounts" :key="account.type">
-        <h3>type: {{ account.type }}</h3>
-        <p>balance: {{ account.balance }}</p>
-        <p>
-          previousTransactionAmount: {{ account.previousTransactionAmount }}
-        </p>
-        <p>previousTransactionDate: {{ account.previousTransactionDate }}</p>
-      </div>
+  <header class="bg-white shadow-sm">
+    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+      <h1 class="text-lg leading-6 font-semibold text-gray-900">Dashboard</h1>
     </div>
-  </div>
+  </header>
+  <main>
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+      <!-- Replace with your content -->
+      <div v-for="member in members" :key="member.id">
+        <MemberAccountsTable :member="member" />
+      </div>
+      <!-- /End replace -->
+    </div>
+  </main>
 </template>
 
 <script lang="ts">
@@ -26,13 +26,14 @@ import {
   Query,
 } from "@firebase/firestore-types";
 import Navbar from "@/components/Navbar.vue";
+import MemberAccountsTable from "@/components/MemberAccountsTable.vue";
 import getCollection from "@/composables/getCollection";
 
 export default defineComponent({
   name: "Dashboard",
-  components: { Navbar },
+  components: { Navbar, MemberAccountsTable },
   setup() {
-    const { error, documents: members } = getCollection("members-simple");
+    const { error, documents: members } = getCollection("members");
 
     return { error, members };
   },

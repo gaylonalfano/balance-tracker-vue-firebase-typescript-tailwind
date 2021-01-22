@@ -84,6 +84,7 @@ export default defineComponent({
       const member = {
         name: memberName.value,
         createdAt: timestamp(),
+        trackerOwner: user.value?.uid,
       };
 
       const response = await addDoc(member);
@@ -91,7 +92,7 @@ export default defineComponent({
       isPending.value = false;
 
       if (!error.value) {
-        console.log("SUCCESS:handleCreatePlaylist:playlist: ");
+        console.log("SUCCESS:handleAddMember");
         // NOTE No need to reset error.value since already null
         // Access response/DocumentReference and its id to reroute
         // to new /playlists/:id route
