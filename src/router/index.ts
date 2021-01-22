@@ -9,6 +9,7 @@ import {
 import { auth } from "@/firebase/config";
 import Home from "@/views/Home.vue";
 import Dashboard from "@/views/Dashboard.vue";
+import AddMember from "@/views/AddMember.vue";
 
 // Creating another Route Guard for Home page for logged-in users
 // They should be redirected to Dashboard if logged in already
@@ -67,6 +68,12 @@ const routes: Array<RouteRecordRaw> = [
     path: "/dashboard",
     name: "Dashboard",
     component: Dashboard,
+    beforeEnter: requireAuth,
+  },
+  {
+    path: "/members/add",
+    name: "AddMember",
+    component: AddMember,
     beforeEnter: requireAuth,
   },
 ];
