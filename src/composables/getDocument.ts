@@ -1,11 +1,11 @@
 import { ref, watchEffect } from "vue";
 import { db } from "@/firebase/config";
 import {
+  DocumentData,
   DocumentSnapshot,
   FirestoreError,
   DocumentReference,
 } from "@firebase/firestore-types";
-import Playlist from "@/interfaces/playlist";
 
 // Create a general purpose function to get passed collection
 // Q: I believe this should be async?
@@ -23,17 +23,12 @@ function getDocument(collection: string, id: string) {
   // const document = ref(null) as Ref<DocumentReference | null>; // nope
   // const document = ref(null) as Ref<DocumentData | null>; // works
   // const document = ref(null) as Ref<Playlist | null>; // works
-  const document = ref<Playlist | null>(null); // works (same as above)
+  const document = ref<DocumentData | null>(null); // works (same as above)
   const error = ref<string | null>(null);
 
   // Create a FS Ref for our document as well and sort
-  // const documentRef: DocumentReference<DocumentData> = db
-  //   .collection(collection)
-  //   .doc(id);
-
-  // Trying with Playlist
   const documentRef = db.collection(collection).doc(id) as DocumentReference<
-    Playlist
+    DocumentData
   >;
 
   // Let's now use onSnapshot() to add real-time listener for QuerySnapshot events
@@ -42,7 +37,7 @@ function getDocument(collection: string, id: string) {
   // use in other places in this function if needed.
   // UPDATE Storing this in const to unsubscribe from listener after a component un-mounts
   const unsubscribe = documentRef.onSnapshot(
-    (doc: DocumentSnapshot<Playlist>) => {
+    (doc: DocumentSnapshot<DocumentData>) => {
       console.log("snapshot"); // Keeping track of how many times the listener stacks up
       // Confirm that the 'doc' actually exists
       // NOTE: Shaun used if (doc.data())
@@ -51,7 +46,7 @@ function getDocument(collection: string, id: string) {
         // We have a doc. Let's update our document.value Ref by spreading
         // ERROR: We meet again! hahah
         document.value = {
-          ...(doc.data() as Playlist),
+          ...(doc.data() as DocumentData),
           id: doc.id,
         };
         console.log("UPDATED:document.value: ", document.value);

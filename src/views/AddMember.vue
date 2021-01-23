@@ -81,10 +81,14 @@ export default defineComponent({
       isPending.value = true;
       console.log(memberName.value);
       // Package up the member object so we can pass to addDoc()
+      // Q: Does my member doc need a pre-defined 'accounts' property?
+      // Or will it get added automatically when tryingto AddAccount?
+      // A: YES! My spread operation in AddAccount.vue throws an Error if no 'accounts' property exists.
       const member = {
         name: memberName.value,
         createdAt: timestamp(),
         trackerOwner: user.value?.uid,
+        accounts: [],
       };
 
       const response = await addDoc(member);
