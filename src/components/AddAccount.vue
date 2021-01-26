@@ -96,8 +96,8 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { timestamp } from "@/firebase/config";
+import { defineComponent, ref, computed } from "vue";
+import { db, timestamp } from "@/firebase/config";
 import useDocument from "@/composables/useDocument";
 
 export default defineComponent({
@@ -114,6 +114,10 @@ export default defineComponent({
     // A: Yes, we pass 'member' as prop from MemberAccountsTable
     // Create input data properties refs
     const type = ref<string>("");
+    // Q: Need another var to sync with form input type field. Trying computed()....
+    // Need to use this value to be the top level label for my Map account object.
+    // This didn't work...
+    const accountType = computed(() => type.value);
     const balance = ref<number>(0);
     const showForm = ref<boolean>(false);
 
@@ -124,30 +128,127 @@ export default defineComponent({
         console.log(
           "PASSED:AddAccount:handleAddAccount:type.value && balance.value >= 0"
         );
+        // ============== WORKING: member.accounts is ARRAY of MAPS approach
         // Package all the inputs into an object
         // Q: Does account need to be reactive? Don't think so...
         // A: Nope.
         // NOTE Adding defaults for latestTransaction to initialize.
         // NOTE Adding transactions empty array to hold transactions subcollection
         // document IDs
+        // const account = {
+        //   type: type.value,
+        //   balance: balance.value,
+        //   latestTransactionAmount: balance.value,
+        //   latestTransactionDate: "1/1/2021",
+        //   transactions: [],
+        // };
+
+        // console.log("handleAddAccount:account: ", account);
+        // // Use our updateDoc(updatesObj) to update/add newSong
+        // // NOTE Don't need to do some try/catch as that's already
+        // // built into addDoc()!
+        // await updateDoc({
+        //   // Q: Does my member doc need a pre-defined 'accounts' property? Or will it be added automatically?
+        //   // A: YES! My spread operation below throws an Error if no 'accounts' property exists.
+        //   // Q: How to access current/existing songs list?
+        //   // A: Use our props! Then just spread!
+        //   accounts: [...props.member.accounts, account],
+        // });
+
+        // ============= BROKEN: member.accounts is MAP of MAPS approach
+        // Q: How to make the first level equal to my type Ref? { savings: { balance, etc. }}
+        // Q: Do I need a computed() that syncs with the form input 'type' field? (e.g. computed(() => type.value)
+        // Well I can't simply use 'accountType' as it is literal string. And I can't use accountType.value...
+        // const account = {
+        //   accountType: {
+        //     balance: balance.value,
+        //     latestTransactionAmount: 0,
+        //     latestTransactionDate: timestamp(),
+        //     latestTransactionRef: "",
+        //   },
+        // };
+        // const account = {
+        //   type: type.value,
+        //   balance: balance.value,
+        //   latestTransactionAmount: 0,
+        //   latestTransactionDate: timestamp(),
+        //   latestTransactionRef: "",
+        // };
+        // // Q: Should I try to literally create a new Map<string, object>() here?
+        // const accountMap = new Map<string, object>();
+        // accountMap.set(type.value, account);
+        // const accountMapGet = accountMap.get(type.value); // Must extract the object
+
+        // Q: What about using var data = {}; then data['key'] = {key1:'val1', key2:'val2'} then data.key.key1 ?
+        // const data = {};
+        // data[type.value] = account;
+
+        // Q: What about having the type be from a pre-defined dropdown selection? accounts.savings: {}, accounts.giving: {}
+        // Q: In this case, do I need pre-defined 'savings' Maps inside FS, or will update() create the new field if not present?
+        // const account = {
+        //   balance: balance.value,
+        //   latestTransactionAmount: 0,
+        //   latestTransactionDate: timestamp(),
+        //   latestTransactionRef: "",
+        // };
+
+        // console.log("handleAddAccount:account: ", account);
+        // // console.log("handleAddAccount:accountMap: ", accountMap);
+        // // console.log("handleAddAccount:data: ", data);
+
+        // TODO Test this out perhyaps?
+        // Q: What about getting an accounts.savings Ref? https://firebase.google.com/docs/reference/node/firebase.database.Reference#update
+        // var adaNameRef = fb.db().ref('users/ada/name'). So, .ref('members/{member.id}/accounts/{type}/')
+        // NOTE Gonna try to use 'db' without the composable
+
+        // Q: What about trying WITHOUT composable to see if I can update accounts.savings
+        // Q: Using the db.collection().doc('member.id/accounts/type') approach
+        // const accountTypeRef = db
+        //   .collection("members")
+        //   .doc(`${props.member.id}/accounts/${type.value}`);
+
+        // console.log("accountTypeRef:accounts/type ", accountTypeRef);
+
+        // // Try to update at accountTypeRef.update({})
+        // // await accountTypeRef.update(account); // ERROR Invalid Doc Ref
+        // await accountTypeRef.set(account); // Creates accounts subcollection and savings document!
+
+        // Q: What about trying WITHOUT composable to see if I can update accounts.savings
+        // Q: Using the db.collection().doc() approach
+        // const accountTypeRef = db
+        //   .collection("members")
+        //   .doc(`${props.member.id}/accounts/`);
+
+        // console.log("accountTypeRef:accounts: ", accountTypeRef);
+
+        // // Try to update at accountTypeRef.update({})
+        // // await accountTypeRef.update(account); // ERROR Invalid Doc Ref
+
+        // Q: What about using dot notation e.g. 'first.test': "12345"? https://stackoverflow.com/questions/49150917/update-fields-in-nested-objects-in-firestore-documents
+        // Along with composable updateDoc() function?
         const account = {
-          type: type.value,
           balance: balance.value,
           latestTransactionAmount: 0,
-          latestTransactionDate: "1/1/2021",
-          transactions: [],
+          latestTransactionDate: timestamp(),
+          latestTransactionRef: "",
         };
 
-        console.log("handleAddAccount:account: ", account);
-        // Use our updateDoc(updatesObj) to update/add newSong
-        // NOTE Don't need to do some try/catch as that's already
-        // built into addDoc()!
         await updateDoc({
-          // Q: Does my member doc need a pre-defined 'accounts' property? Or will it be added automatically?
-          // A: YES! My spread operation below throws an Error if no 'accounts' property exists.
-          // Q: How to access current/existing songs list?
-          // A: Use our props! Then just spread!
-          accounts: [...props.member.accounts, account],
+          // accounts: { ...props.member.accounts, account }, // Just normal without top label
+          // accounts: { ...props.member.accounts, account['type']: account }, // Syntax error
+          // accounts: { ...props.member.accounts, accountMap } // FAILED. Must extract the object
+          // accounts: { ...props.member.accounts, accountMapGet }, // Works but don't have top-level name (type.value string)
+          // accounts: { ...props.member.accounts, accountMap[type.value]: accountMapGet },  // Syntax error
+          // accounts: {...props.member.accounts, data[type.value] }  // Syntax error
+          // Q: What about having the type be from a pre-defined dropdown selection? (i.e. accounts: { savings: {}, giving: {})
+          // Q: In this case, do I need pre-defined 'savings' Maps inside FS, or will update() create the new field if not present?
+          // accounts: { ...props.member.accounts.savings, account }, // Works but does accounts { account { balance... }}. savings doesn't pass over.
+          // Q: What if accounts is Map of Maps? (i.e. accounts: {}) Will it create the account if not present?
+          // accounts: { ...props.member.accounts.savings, account }, // Works but does accounts { account { balance... }}. savings doesn't pass over.
+          // accounts: { ...props.member.accounts.savings, account }, // Works but does accounts { account { balance... }}. savings doesn't pass over.
+          // Q: What about using relative path 'dot notation' with update() ("name/first" vs. "name")?
+          // https://firebase.google.com/docs/reference/node/firebase.database.Reference#update
+          [`accounts.${type.value}`]: account,
         });
 
         // Collapse/hide/toggle showForm value after adding a new account

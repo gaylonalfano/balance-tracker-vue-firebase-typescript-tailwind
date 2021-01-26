@@ -88,7 +88,16 @@ export default defineComponent({
         name: memberName.value,
         createdAt: timestamp(),
         trackerOwner: user.value?.uid,
-        accounts: [],
+        // accounts: [],
+        // Q: What about accounts as MAP of MAPS?
+        // A: Works but now have accounts displayed on cards with no data.
+        // accounts: {
+        //   savings: {},
+        //   spending: {},
+        //   giving: {},
+        // },
+        // Q: What if I don't pre-define the accounts? When AddAccount will it add or fail?
+        accounts: {},
       };
 
       const response = await addDoc(member);
