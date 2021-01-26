@@ -47,7 +47,7 @@
               type="text"
               autocomplete="type"
               required
-              class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              class="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
               placeholder="Account type"
             />
           </div>
@@ -60,12 +60,19 @@
               type="number"
               autocomplete="balance"
               required
-              class="appearance-none rounded-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+              class="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
               placeholder="Balance"
             />
           </div>
         </div>
         <div class="flex justify-between">
+          <button
+            type="button"
+            @click="showForm = false"
+            class="justify-center py-2 px-4 border border-transparent text-xs font-medium rounded-md text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          >
+            Cancel
+          </button>
           <button
             v-if="!isPending"
             class="justify-center py-2 px-4 border border-transparent text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
@@ -78,13 +85,6 @@
             class="disabled cursor-not-allowed justify-center py-2 px-4 border border-transparent text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
           >
             Adding...
-          </button>
-          <button
-            type="button"
-            @click="showForm = false"
-            class="justify-center py-2 px-4 border border-transparent text-xs font-medium rounded-md text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Cancel
           </button>
         </div>
         <div v-if="error">
@@ -120,19 +120,22 @@ export default defineComponent({
     // Handler for form submission
     async function handleAddAccount() {
       // Confirm we have user inputs for new account
-      if (type.value && balance.value) {
+      if (type.value && balance.value >= 0) {
         console.log(
-          "PASSED:AddAccount:handleAddAccount:type.value && balance.value"
+          "PASSED:AddAccount:handleAddAccount:type.value && balance.value >= 0"
         );
         // Package all the inputs into an object
         // Q: Does account need to be reactive? Don't think so...
         // A: Nope.
         // NOTE Adding defaults for latestTransaction to initialize.
+        // NOTE Adding transactions empty array to hold transactions subcollection
+        // document IDs
         const account = {
           type: type.value,
           balance: balance.value,
           latestTransactionAmount: 0,
           latestTransactionDate: "1/1/2021",
+          transactions: [],
         };
 
         console.log("handleAddAccount:account: ", account);

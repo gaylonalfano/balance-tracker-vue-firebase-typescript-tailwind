@@ -43,7 +43,7 @@ function useDocument(collection: string, docId: string) {
     error.value = null;
     isPending.value = true;
 
-    // Try to delete using FB built-in update() method
+    // Try to update using FB built-in update() method
     // NOTE Only pass in object with props to update
     try {
       const response = await documentRef.update(updatesObj);

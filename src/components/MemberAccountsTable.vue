@@ -32,34 +32,35 @@
       </div>
     </div>
   </div>
+  <!-- Account Details Stats Card -->
+  <AccountDetailsStatsCard :member="member" />
   <!-- Table header and rows -->
-  <div class="flex flex-col">
-    <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
-      <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
-        <div
-          class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg"
-        >
-          <table class="min-w-full divide-y divide-gray-200">
-            <AccountDetailsHeader />
-            <AccountDetailsRow :accounts="member.accounts" />
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+  <!-- <div class="flex flex-col"> -->
+  <!--   <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"> -->
+  <!--     <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8"> -->
+  <!--       <div -->
+  <!--         class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg" -->
+  <!--       > -->
+  <!--         <table class="min-w-full divide-y divide-gray-200"> -->
+  <!--           <AccountDetailsHeader /> -->
+  <!--           <AccountDetailsRow :accounts="member.accounts" /> -->
+  <!--         </table> -->
+  <!--       </div> -->
+  <!--     </div> -->
+  <!--   </div> -->
+  <!-- </div> -->
 </template>
 
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import AddAccount from "@/components/AddAccount.vue";
-import AccountDetailsHeader from "@/components/AccountDetailsHeader.vue";
-import AccountDetailsRow from "@/components/AccountDetailsRow.vue";
+import AccountDetailsStatsCard from "@/components/AccountDetailsStatsCard.vue";
 import useDocument from "@/composables/useDocument";
 
 export default defineComponent({
   name: "MemberAccountsTable",
-  components: { AddAccount, AccountDetailsHeader, AccountDetailsRow },
+  components: { AddAccount, AccountDetailsStatsCard },
   props: ["member"],
   setup(props) {
     // We already have the member object via props. Let's pull in useDocument()
