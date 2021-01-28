@@ -57,14 +57,13 @@
                       >Transaction Amount</label
                     >
                     <input
-                      v-model="transactionAmount"
+                      v-model.number="transactionAmount"
                       id="transaction-amount"
                       name="transaction-amount"
                       type="number"
                       autocomplete="current-transaction-amount"
                       required
                       class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-                      placeholder="Transaction amount"
                     />
                   </div>
                   <div>
@@ -114,11 +113,12 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from "vue";
-import { useRouter } from "vue-router";
-import { timestamp } from "@/firebase/config";
+import { defineComponent, ref, onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
+import { timestamp, db } from "@/firebase/config";
 import useCollection from "@/composables/useCollection";
 import useDocument from "@/composables/useDocument";
+import getDocument from "@/composables/getDocument";
 
 export default defineComponent({
   name: "AddTransaction",
@@ -126,21 +126,58 @@ export default defineComponent({
   setup(props) {
     // Q: Do I need the full member (via passing :member="member" props)?
     // Q: Or, just member.account as a props via route.params?
-    // console.log(props);
+    // A1: If I just pass route.params then I need to still retrieve member document
+    // because I need to get its current account values before updating.
+    // A2: If I pass 'member' prop, then I already have access to current member,
+    // BUT, how would I know the account type without route.params? Guess I could
+    // import useRoute() to grab params? Yes, this an option.
 
-    // Let's get the useCollection addDoc() functionality
-    const {
-      addDoc,
-      error: errorAddDoc,
-      isPending: isPendingAddDoc,
-    } = useCollection(`members/${props.id}/transactions`);
+    // Let's try just making a second request using getDocument() composable
+    const { document: member, error: errorGetDocument } = getDocument(
+      "members",
+      props.id
+    );
+    // Q: How to get a actual value for member?
+    // Let's now simplify and get a current accountRef object
+    // const accountRef = member.value?.accounts[`${props.type}`];
+    // console.log("accountRef", accountRef); // undefined
+    // console.log("member.value: ", member.value); // null
+    // console.log("member.value.data(): ", member.value); // null
+    // onMounted(() => {
+    //   console.log("ONMOUNTED:member.value: ", member.value); // null
+    // });
+    // Q: What if I just use db directly?
+    // const memberRef = db.collection("members").doc(props.id).get("accounts"); // Error with 'accounts'
+    // const memberRef = db.collection("members").doc(props.id); // e {_:t, firestore: e, Hf: e}
+    // const memberRef = db.collection("members").doc(props.id).get();  // Promise
+    // console.log("memberRef ", memberRef);
+    // console.log(memberRef);
+    // const request = async (): Promise<void> => {
+    //   const memberDocumentRef = await db
+    //     .collection("members")
+    //     .doc(props.id)
+    //     .get();
+    //   console.log("request:memberDocumentRef: ", memberDocumentRef);
+    //   // Works! e {_:e, zf: e}
+    //   const memberAccountRef = memberDocumentRef.data()?.accounts;
+    //   console.log("request:memberAccountRef: ", memberAccountRef);
+    //   // Works! {savings:{}, giving:{}}
+    // };
+    // request();
 
-    // Get updateDoc() functionality to add transaction.id to account transactions Array
-    const {
-      error: errorUpdateDoc,
-      updateDoc,
-      isPending: isPendingUpdateDoc,
-    } = useDocument("members", props.id);
+    // Let's get the useCollection addDoc() functionality to add new transaction doc
+    const { addDoc, error: errorAddDoc } = useCollection(
+      `members/${props.id}/transactions`
+    );
+
+    // Get updateDoc() composable functionality to add transaction.id to account type transactions Array
+    // Q: Should I use a FS watcher/listener with onSnapshot()?
+    // Q: Or, do I just first add new transaction doc THEN update member doc
+    // with the returned response values?
+    const { error: errorUpdateDoc, updateDoc } = useDocument(
+      "members",
+      props.id
+    );
 
     const transactionAmount = ref<number>(0);
     const notes = ref<string>("");
@@ -148,6 +185,10 @@ export default defineComponent({
     // Create new useRouter() instance to reroute to /dashboard
     // or if 'Cancel' button is clicked to go back to /dashboard
     const router = useRouter();
+    // What info do I have available on just useRoute()?
+    // const route = useRoute();
+    // console.log({ route }); // Proxy {path, name, params, query}
+    // console.log(route.params); // {id, type}
 
     function handleCancel() {
       // Go back by one record in the history (ie. to /dashboard)
@@ -159,9 +200,6 @@ export default defineComponent({
     async function handleAddTransaction() {
       // Q: What is a Transaction doc going to look like? Do I have everything?
       // id, timestamp, member.id, account.type, transactionAmount, notes
-
-      isPendingAddDoc.value = true;
-
       const transaction = {
         memberId: props.id,
         accountType: props.type,
@@ -172,14 +210,13 @@ export default defineComponent({
       // console.log(transaction);
       // Let's create the new doc in Transactions subcollection
       const response = await addDoc(transaction); // works!
-      // console.log(response?.id);  // works!
-
-      // Need to reset isPending
-      isPendingAddDoc.value = false;
+      // console.log(response?.id); // works!
+      // console.log({ response }); // Doesn't have the full data I don't believe
 
       // Confirm success, add response.id to account.transactions Array,
       // and reroute back to dashboard
       if (!errorAddDoc.value) {
+        console.log("PASSED:!errorAddDoc.value");
         // Q: How can I retrieve the new document Id? On response?
         // A: Yep! It's on the response object! Now I can use this
         // response.id to update my account transactions Array.
@@ -188,8 +225,33 @@ export default defineComponent({
         // Q: Could also update all the account properties while I'm at it?
         // Q: This is the KEY connection between accounts and transactions
         // using this data model structure.
+        // A: UPDATE. I've changed accounts to MAP of MAPS instead of Array of Maps
+        // A: This way I don't have to do fancy looping through an Array to match on type
+        // A: Learned about dot notation to update fields inside nested objects
+        // E.g., updateDoc({[`accounts.${type.value}`]: account,})
+        // Need to getDocument('members', props.id) so I can get current account values
+        if (member.value) {
+          await updateDoc({
+            [`accounts.${props.type}`]: {
+              // NOTE MUST add 'type' prop or it's removed. Odd.
+              type: props.type,
+              balance:
+                member.value.accounts[`${props.type}`].balance +
+                transaction.transactionAmount,
+              latestTransactionAmount: transaction.transactionAmount,
+              latestTransactionDate: transaction.transactionDate,
+              latestTransactionRef: response?.id,
+            },
+          });
 
-        await updateDoc({});
+          if (!errorUpdateDoc.value) {
+            console.log("PASSED:!errorUpdateDoc.value");
+            console.log(`UPDATED:member.accounts.${props.type}`);
+            router.push({ name: "Dashboard" });
+          }
+        } else {
+          console.log("FAILED:member.value: ", member.value);
+        }
       }
     }
 

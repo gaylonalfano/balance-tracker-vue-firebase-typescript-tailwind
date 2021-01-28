@@ -54,14 +54,13 @@
           <div>
             <label for="balance" class="sr-only">Balance</label>
             <input
-              v-model="balance"
+              v-model.number="balance"
               id="balance"
               name="balance"
               type="number"
               autocomplete="balance"
               required
               class="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Balance"
             />
           </div>
         </div>
@@ -117,7 +116,7 @@ export default defineComponent({
     // Q: Need another var to sync with form input type field. Trying computed()....
     // Need to use this value to be the top level label for my Map account object.
     // This didn't work...
-    const accountType = computed(() => type.value);
+    // const accountType = computed(() => type.value);
     const balance = ref<number>(0);
     const showForm = ref<boolean>(false);
 
@@ -227,8 +226,9 @@ export default defineComponent({
         // Q: What about using dot notation e.g. 'first.test': "12345"? https://stackoverflow.com/questions/49150917/update-fields-in-nested-objects-in-firestore-documents
         // Along with composable updateDoc() function?
         const account = {
+          type: type.value, // Add type even if redundant.
           balance: balance.value,
-          latestTransactionAmount: 0,
+          latestTransactionAmount: balance.value,
           latestTransactionDate: timestamp(),
           latestTransactionRef: "",
         };
@@ -248,7 +248,7 @@ export default defineComponent({
           // accounts: { ...props.member.accounts.savings, account }, // Works but does accounts { account { balance... }}. savings doesn't pass over.
           // Q: What about using relative path 'dot notation' with update() ("name/first" vs. "name")?
           // https://firebase.google.com/docs/reference/node/firebase.database.Reference#update
-          [`accounts.${type.value}`]: account,
+          [`accounts.${type.value}`]: account, // WORKS!
         });
 
         // Collapse/hide/toggle showForm value after adding a new account

@@ -44,7 +44,7 @@ function getDocument(collection: string, id: string) {
       if (doc.exists) {
         console.log("PASSED:doc.exists");
         // We have a doc. Let's update our document.value Ref by spreading
-        // ERROR: We meet again! hahah
+        // TS ERROR: We meet again! hahah
         document.value = {
           ...(doc.data() as DocumentData),
           id: doc.id,

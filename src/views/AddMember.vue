@@ -97,6 +97,7 @@ export default defineComponent({
         //   giving: {},
         // },
         // Q: What if I don't pre-define the accounts? When AddAccount will it add or fail?
+        // A: Works! Need to use dot notation to update/add eg update({[`accounts.${type.value}`]: account})
         accounts: {},
       };
 
