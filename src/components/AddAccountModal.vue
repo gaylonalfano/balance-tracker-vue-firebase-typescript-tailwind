@@ -1,96 +1,135 @@
 <template>
-  <div>
-    <div class="relative mt-4">
-      <div class="absolute inset-0 flex items-center" aria-hidden="true">
-        <div class="w-full border-t border-gray-300"></div>
+  <!-- This example requires Tailwind CSS v2.0+ -->
+  <div class="fixed z-10 inset-0 overflow-y-auto">
+    <div
+      class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0"
+    >
+      <!--
+      Background overlay, show/hide based on modal state.
+
+      Entering: "ease-out duration-300"
+        From: "opacity-0"
+        To: "opacity-100"
+      Leaving: "ease-in duration-200"
+        From: "opacity-100"
+        To: "opacity-0"
+    -->
+      <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
       </div>
-      <div class="relative flex justify-center">
-        <button
-          v-if="!showForm"
-          @click="showForm = true"
-          type="button"
-          class="inline-flex items-center shadow-sm px-4 py-1.5 border border-gray-300 text-sm leading-5 font-medium rounded-full text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          <!-- Heroicon name: plus-sm -->
-          <svg
-            class="-ml-1.5 mr-1 h-5 w-5 text-gray-400"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 20 20"
-            fill="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              fill-rule="evenodd"
-              d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z"
-              clip-rule="evenodd"
-            />
-          </svg>
-          <span>Account</span>
-        </button>
-      </div>
-    </div>
-    <!-- Display Add Account Form when showForm toggled -->
-    <div class="flex m-auto justify-center">
-      <form
-        v-if="showForm"
-        @submit.prevent="handleAddAccount"
-        class="mt-1 space-y-4 max-w-md"
+
+      <!-- This element is to trick the browser into centering the modal contents. -->
+      <span
+        class="hidden sm:inline-block sm:align-middle sm:h-screen"
+        aria-hidden="true"
+        >&#8203;</span
       >
-        <input type="hidden" name="remember" value="true" />
-        <div class="rounded-md shadow-sm -space-y-px">
-          <div>
-            <label for="type" class="sr-only">Account Type</label>
-            <input
-              ref="typeInputRef"
-              v-model="type"
-              id="type"
-              name="type"
-              type="text"
-              autocomplete="type"
-              required
-              class="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-              placeholder="Account type"
-            />
+      <!--
+      Modal panel, show/hide based on modal state.
+
+      Entering: "ease-out duration-300"
+        From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+        To: "opacity-100 translate-y-0 sm:scale-100"
+      Leaving: "ease-in duration-200"
+        From: "opacity-100 translate-y-0 sm:scale-100"
+        To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+    -->
+      <div
+        class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-headline"
+      >
+        <div>
+          <div
+            class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100"
+          >
+            <!-- Heroicon name: check -->
+            <svg
+              class="h-6 w-6 text-green-600"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              aria-hidden="true"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 13l4 4L19 7"
+              />
+            </svg>
           </div>
-          <div>
-            <label for="balance" class="sr-only">Balance</label>
-            <input
-              v-model.number="balance"
-              id="balance"
-              name="balance"
-              type="number"
-              autocomplete="balance"
-              required
-              class="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
-            />
+          <div class="mt-3 text-center sm:mt-5">
+            <h3
+              class="text-lg leading-6 font-medium text-gray-900"
+              id="modal-headline"
+            >
+              Add new account
+            </h3>
+            <div class="mt-2">
+              <form
+                @submit.prevent="handleAddAccount"
+                class="mt-1 space-y-4 max-w-md"
+              >
+                <input type="hidden" name="remember" value="true" />
+                <div class="rounded-md shadow-sm -space-y-px">
+                  <div>
+                    <label for="type" class="sr-only">Account Type</label>
+                    <input
+                      ref="typeInputRef"
+                      v-model="type"
+                      id="type"
+                      name="type"
+                      type="text"
+                      autocomplete="type"
+                      autofocus
+                      required
+                      class="appearance-none rounded-t-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                      placeholder="Account type"
+                    />
+                  </div>
+                  <div>
+                    <label for="balance" class="sr-only">Balance</label>
+                    <input
+                      v-model.number="balance"
+                      id="balance"
+                      name="balance"
+                      type="number"
+                      autocomplete="balance"
+                      required
+                      class="appearance-none rounded-b-md relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
+                    />
+                  </div>
+                </div>
+                <!-- Place buttons inside form otherwise Enter key won't submit -->
+                <div
+                  class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense"
+                >
+                  <button
+                    @click="handleAddAccount"
+                    type="submit"
+                    class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-500 text-base font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm"
+                  >
+                    Add Account
+                  </button>
+                  <button
+                    @click="$emit('close')"
+                    type="button"
+                    class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm"
+                  >
+                    Cancel
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
-        </div>
-        <div class="flex justify-between">
-          <button
-            type="button"
-            @click="showForm = false"
-            class="justify-center py-2 px-4 border border-transparent text-xs font-medium rounded-md text-white bg-gray-500 hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Cancel
-          </button>
-          <button
-            v-if="!isPending"
-            class="justify-center py-2 px-4 border border-transparent text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            + Account
-          </button>
-          <button
-            v-else
-            disabled
-            class="disabled cursor-not-allowed justify-center py-2 px-4 border border-transparent text-xs font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-          >
-            Adding...
-          </button>
         </div>
         <div v-if="error">
           <h3 class="text-sm font-medium text-red-800">{{ error }}</h3>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </template>
@@ -101,9 +140,10 @@ import { db, timestamp } from "@/firebase/config";
 import useDocument from "@/composables/useDocument";
 
 export default defineComponent({
-  name: "AddAccount",
+  name: "AddAccountModal",
   props: ["member"],
-  setup(props) {
+  emits: ["close"],
+  setup(props, context) {
     // Pull in useDocument() and the updateDoc() method
     const { updateDoc, error, isPending } = useDocument(
       "members",
@@ -263,15 +303,19 @@ export default defineComponent({
           [`accounts.${type.value}`]: account, // WORKS!
         });
 
-        // Collapse/hide/toggle showForm value after adding a new account
-        showForm.value = false;
-
-        // Clear form inputs
-        balance.value = 0;
-        type.value = "";
+        // Q: Need to reroute or anything? Let's test...
+        // A: Need to context.emit('close') event back to parent.
+        // This is because we're NOT using a route! I guess I could use the
+        // router to go back but this may be better.
+        // NOTE: Need to catch this event with @close in parent where
+        // I embed <AddAccountModal @close="showAddAccountModal = false" />
+        if (!error.value) {
+          console.log("ADDED Account. EMITTING to parent");
+          context.emit("close");
+        }
       }
     }
-    return { handleAddAccount, type, balance, showForm, error, isPending };
+    return { handleAddAccount, type, balance, error, isPending };
   },
 });
 </script>

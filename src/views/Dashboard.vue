@@ -15,7 +15,7 @@
           <!-- Membmer Accounts Table -->
           <MemberAccountsTable :member="member" />
           <!-- Divider & + Account Button -->
-          <AddAccount :member="member" />
+          <!-- <AddAccount :member="member" /> -->
         </li>
       </ul>
     </div>
@@ -58,21 +58,13 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
-import { db } from "@/firebase/config";
-import {
-  QueryDocumentSnapshot,
-  DocumentData,
-  QuerySnapshot,
-  Query,
-} from "@firebase/firestore-types";
 import Navbar from "@/components/Navbar.vue";
 import MemberAccountsTable from "@/components/MemberAccountsTable.vue";
-import AddAccount from "@/components/AddAccount.vue";
 import getCollection from "@/composables/getCollection";
 
 export default defineComponent({
   name: "Dashboard",
-  components: { Navbar, MemberAccountsTable, AddAccount },
+  components: { Navbar, MemberAccountsTable },
   setup() {
     const { error, documents: members } = getCollection("members");
 

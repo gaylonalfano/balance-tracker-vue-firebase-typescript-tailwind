@@ -12,7 +12,7 @@
         <button
           @click="showDeleteMemberModal = true"
           type="button"
-          class="inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+          class="inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
         >
           <svg
             class="w-5 h-5"
@@ -40,6 +40,21 @@
   </div>
   <!-- Account Details Stats Card -->
   <AccountDetailsStatsCard :member="member" />
+  <!-- Add Account Modal Form Button Toggle -->
+  <div class="justify-center mt-5 py-2 sm:mt-4 sm:flex sm:flex-row-reverse">
+    <button
+      @click="showAddAccountModal = true"
+      type="button"
+      class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-500 text-base font-medium text-white hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm"
+    >
+      + Account
+    </button>
+    <AddAccountModal
+      v-if="showAddAccountModal"
+      :member="member"
+      @close="showAddAccountModal = false"
+    />
+  </div>
   <!-- Table header and rows -->
   <!-- <div class="flex flex-col"> -->
   <!--   <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8"> -->
@@ -61,19 +76,27 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import AddAccount from "@/components/AddAccount.vue";
+import AddAccountModal from "@/components/AddAccountModal.vue";
 import AccountDetailsStatsCard from "@/components/AccountDetailsStatsCard.vue";
 import DeleteMember from "@/components/DeleteMember.vue";
 import useDocument from "@/composables/useDocument";
 
 export default defineComponent({
   name: "MemberAccountsTable",
-  components: { AddAccount, AccountDetailsStatsCard, DeleteMember },
+  components: {
+    AddAccount,
+    AccountDetailsStatsCard,
+    DeleteMember,
+    AddAccountModal,
+  },
   props: ["member"],
   setup(props) {
     // UPDATE Adding DeleteMember Modal so need a boolean ref to show
     const showDeleteMemberModal = ref<boolean>(false);
+    // Adding AddAccountModal so need a ref to show
+    const showAddAccountModal = ref<boolean>(false);
 
-    return { showDeleteMemberModal };
+    return { showDeleteMemberModal, showAddAccountModal };
   },
 });
 </script>

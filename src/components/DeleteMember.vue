@@ -105,6 +105,7 @@ import useDocument from "@/composables/useDocument";
 export default defineComponent({
   name: "DeleteMember",
   props: ["member"],
+  emits: ["close"],
   setup(props, context) {
     // We already have the member object via props. Let's pull in useDocument()
     // so we can delete member doc
