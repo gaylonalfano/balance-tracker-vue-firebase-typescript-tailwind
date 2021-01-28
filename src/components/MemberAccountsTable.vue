@@ -10,7 +10,7 @@
       </div>
       <div class="ml-4 mt-2 flex-shrink-0 space-x-4">
         <button
-          @click="handleDeleteMember"
+          @click="showDeleteMemberModal = true"
           type="button"
           class="inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
         >
@@ -29,6 +29,12 @@
             ></path>
           </svg>
         </button>
+        <!-- Add Delete Member Modal -->
+        <DeleteMember
+          v-if="showDeleteMemberModal"
+          :member="member"
+          @close="showDeleteMemberModal = false"
+        />
       </div>
     </div>
   </div>
@@ -56,30 +62,18 @@
 import { defineComponent, ref } from "vue";
 import AddAccount from "@/components/AddAccount.vue";
 import AccountDetailsStatsCard from "@/components/AccountDetailsStatsCard.vue";
+import DeleteMember from "@/components/DeleteMember.vue";
 import useDocument from "@/composables/useDocument";
 
 export default defineComponent({
   name: "MemberAccountsTable",
-  components: { AddAccount, AccountDetailsStatsCard },
+  components: { AddAccount, AccountDetailsStatsCard, DeleteMember },
   props: ["member"],
   setup(props) {
-    // We already have the member object via props. Let's pull in useDocument()
-    // so we can update the accounts property (Array of Maps)
-    const { updateDoc, deleteDoc, error } = useDocument(
-      "members",
-      props.member.id
-    );
+    // UPDATE Adding DeleteMember Modal so need a boolean ref to show
+    const showDeleteMemberModal = ref<boolean>(false);
 
-    // Let's delete member docs
-    async function handleDeleteMember() {
-      // We already have selected our document via useDocument('members', props.member.id)
-      // Just need to delete it.
-      await deleteDoc();
-
-      // Q: Need to reroute or anything? Let's test...
-    }
-
-    return { error, handleDeleteMember };
+    return { showDeleteMemberModal };
   },
 });
 </script>
