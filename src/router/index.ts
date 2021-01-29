@@ -11,6 +11,7 @@ import Home from "@/views/Home.vue";
 import Dashboard from "@/views/Dashboard.vue";
 import AddMember from "@/views/AddMember.vue";
 import AddTransaction from "@/views/AddTransaction.vue";
+import DeleteAccountModal from "@/views/DeleteAccountModal.vue";
 
 // Creating another Route Guard for Home page for logged-in users
 // They should be redirected to Dashboard if logged in already
@@ -76,6 +77,13 @@ const routes: Array<RouteRecordRaw> = [
     name: "AddMember",
     component: AddMember,
     beforeEnter: requireAuth,
+  },
+  {
+    path: "/members/:id/accounts/:type/delete",
+    name: "DeleteAccount",
+    component: DeleteAccountModal,
+    beforeEnter: requireAuth,
+    props: true,
   },
   {
     path: "/members/:id/accounts/:type/transactions/add",

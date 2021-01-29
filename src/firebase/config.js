@@ -13,7 +13,7 @@ const firebaseConfig = {
 };
 
 // === Init Firebase App connection to backend
-const firebaseApp = firebase.initializeApp(firebaseConfig);
+const fb = firebase.initializeApp(firebaseConfig);
 
 // === Init Services
 // Initialize Authentication Service
@@ -22,7 +22,7 @@ const auth = firebase.auth(); // Or, projectAuth
 // Initialize Firestore Service
 // NOTE It's this that allows us to interact with our Firestore
 // to add documents, retrieve collections, etc.
-const db = firebase.firestore(firebaseApp); // Or, projectFirestore
+const db = firebase.firestore(fb); // Or, projectFirestore
 
 // Initialize Firebase Storage Service
 const storage = firebase.storage();
@@ -33,4 +33,4 @@ const storage = firebase.storage();
 const timestamp = firebase.firestore.FieldValue.serverTimestamp;
 
 // Export it so we can import/use Firebase into other files/components
-export { auth, db, storage, timestamp };
+export { fb, auth, db, storage, timestamp };

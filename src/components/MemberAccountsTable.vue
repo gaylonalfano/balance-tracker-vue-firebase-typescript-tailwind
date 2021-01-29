@@ -76,9 +76,9 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import AddAccount from "@/components/AddAccount.vue";
-import AddAccountModal from "@/components/AddAccountModal.vue";
+import AddAccountModal from "@/views/AddAccountModal.vue";
 import AccountDetailsStatsCard from "@/components/AccountDetailsStatsCard.vue";
-import DeleteMember from "@/components/DeleteMember.vue";
+import DeleteMember from "@/views/DeleteMember.vue";
 import useDocument from "@/composables/useDocument";
 
 export default defineComponent({
