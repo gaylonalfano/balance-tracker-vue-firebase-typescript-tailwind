@@ -15,7 +15,7 @@
         To: "opacity-0"
     -->
       <div class="fixed inset-0 transition-opacity" aria-hidden="true">
-        <div class="absolute inset-0 bg-indigo-50 opacity-75"></div>
+        <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
       </div>
 
       <!-- This element is to trick the browser into centering the modal contents. -->
@@ -204,8 +204,13 @@ export default defineComponent({
         memberId: props.id,
         accountType: props.type,
         transactionAmount: transactionAmount.value,
-        transactionDate: timestamp(),
+        // transactionDate: timestamp(),
+        createdAt: timestamp(), // using createdAt since getCollection.ts has it for orderBy
         notes: notes.value,
+        currentBalance:
+          member.value?.accounts[`${props.type}`].currentBalance +
+          transactionAmount.value,
+        previousBalance: member.value?.accounts[`${props.type}`].currentBalance,
       };
       // console.log(transaction);
       // Let's create the new doc in Transactions subcollection
@@ -235,12 +240,14 @@ export default defineComponent({
             [`accounts.${props.type}`]: {
               // NOTE MUST add 'type' prop or it's removed. Odd.
               type: props.type,
-              balance:
-                member.value.accounts[`${props.type}`].balance +
+              currentBalance:
+                member.value.accounts[`${props.type}`].currentBalance +
                 transaction.transactionAmount,
               latestTransactionAmount: transaction.transactionAmount,
-              latestTransactionDate: transaction.transactionDate,
+              latestTransactionDate: transaction.createdAt,
               latestTransactionRef: response?.id,
+              previousBalance:
+                member.value.accounts[`${props.type}`].currentBalance,
             },
           });
 

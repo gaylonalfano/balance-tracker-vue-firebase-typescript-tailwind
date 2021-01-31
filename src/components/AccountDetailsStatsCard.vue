@@ -13,7 +13,7 @@
             </dt>
             <dd class="flex items-baseline">
               <div class="text-2xl font-semibold text-gray-900">
-                ¥{{ account.balance }}
+                ¥{{ account.currentBalance }}
               </div>
               <!-- Latest Transaction Arrow Indicator -->
               <div
@@ -74,7 +74,7 @@
           <!-- View Transactions Router Link -->
           <router-link
             :to="{
-              name: 'Dashboard',
+              name: 'MemberAccountsTransactionsDetails',
               params: { id: member.id, type: account.type },
             }"
             class="font-medium text-gray-600 hover:text-gray-500"

@@ -279,10 +279,11 @@ export default defineComponent({
         // Along with composable updateDoc() function?
         const account = {
           type: type.value, // Add type even if redundant.
-          balance: balance.value,
+          currentBalance: balance.value,
           latestTransactionAmount: balance.value,
           latestTransactionDate: timestamp(),
           latestTransactionRef: "",
+          previousBalance: 0,
         };
 
         await updateDoc({

@@ -5,7 +5,7 @@
     >
       <div class="ml-4 mt-2">
         <h3 class="text-lg leading-6 font-medium text-gray-900">
-          {{ member.name }}--{{ member.id }}
+          {{ member.name }}
         </h3>
       </div>
       <div class="ml-4 mt-2 flex-shrink-0 space-x-4">

@@ -240,6 +240,7 @@ export default defineComponent({
         const account = {
           type: type.value, // Add type even if redundant.
           balance: balance.value,
+          previousBalance: 10,
           latestTransactionAmount: balance.value,
           latestTransactionDate: timestamp(),
           latestTransactionRef: "",
