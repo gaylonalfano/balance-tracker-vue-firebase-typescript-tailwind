@@ -4,11 +4,13 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between h-16">
         <div class="flex-shrink-0 flex items-center">
-          <img
-            class="block h-8 w-auto"
-            src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
-            alt="Workflow"
-          />
+          <router-link :to="{ name: 'Dashboard' }">
+            <img
+              class="block h-8 w-auto"
+              src="https://tailwindui.com/img/logos/workflow-mark-indigo-500.svg"
+              alt="Workflow"
+            />
+          </router-link>
         </div>
         <div class="hidden md:ml-6 md:flex md:items-center md:space-x-4">
           <!-- Current: "bg-gray-900 text-white", Default: "text-gray-300 hover:bg-gray-700 hover:text-white" -->
@@ -41,7 +43,7 @@
               <span>New Member</span>
             </router-link>
           </div>
-          <div class="flex-shrink-0">
+          <div v-if="user" class="flex-shrink-0">
             <button
               @click="handleLogout"
               type="button"
@@ -49,6 +51,14 @@
             >
               Logout
             </button>
+          </div>
+          <div v-else class="flex-shrink-0">
+            <router-link
+              :to="{ name: 'Home' }"
+              class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-white bg-indigo-500 border border-transparent shadow-sm rounded-md hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500"
+            >
+              Login
+            </router-link>
           </div>
         </div>
       </div>
