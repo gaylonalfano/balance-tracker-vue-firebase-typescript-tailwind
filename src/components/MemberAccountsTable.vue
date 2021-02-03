@@ -41,7 +41,15 @@
   <!-- Account Details Stats Card -->
   <!-- FIXME I should refactor to v-for loop over member.accounts HERE -->
   <!-- instead of within AccountDetailsStatsCard! Should pass :member AND :account props -->
-  <AccountDetailsStatsCard :member="member" />
+  <!-- Q: Should :key be account or account.type? -->
+  <!-- A: I think account.... -->
+  <div
+    v-for="account in member.accounts"
+    :key="account"
+    class="flex flex-col bg-white overflow-hidden shadow rounded-lg"
+  >
+    <AccountDetailsStatsCard :member="member" :account="account" />
+  </div>
   <!-- Add Account Modal Form Button Toggle -->
   <div class="justify-center mt-5 py-2 sm:mt-4 sm:flex sm:flex-row-reverse">
     <button

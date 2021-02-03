@@ -100,6 +100,7 @@
 
 <script lang="ts">
 import { defineComponent } from "vue";
+import firebase from "firebase/app";
 import useDocument from "@/composables/useDocument";
 
 export default defineComponent({
@@ -107,9 +108,9 @@ export default defineComponent({
   props: ["member", "account"], // Originally, ["id", "type"] from route.params
   emits: ["close"],
   setup(props, context) {
+    // UPDATE This component is testing pass PROPS instead of route.params "id" and "type"
     // We already have the member object via props. Let's pull in useDocument()
     // so we can update member doc
-    // UPDATE I was passing member as prop. Now it's just id and type for route.params
     const { updateDoc, error, isPending } = useDocument(
       "members",
       props.member.id
@@ -132,6 +133,15 @@ export default defineComponent({
       //const account = {
       // [`accounts.${props.member.accounts[]}`]: undefined,
       // };
+      // A: Yes, you can pass multiple props. However, I had to use a router-link to
+      // correctly retrieve the account type. My v-for in StatsCard only gets the LAST account
+      // UPDATE I fixed my v-for in StatsCard so now passing PROPS instead of route.params
+      // Now my props are "member" and "account"
+      await updateDoc({
+        // [`accounts.${props.type}`]: firebase.firestore.FieldValue.delete(),
+        // [`accounts.${props.account}`]: firebase.firestore.FieldValue.delete(), // FS Failed
+        [`accounts.${props.account.type}`]: firebase.firestore.FieldValue.delete(), // Works! Needed .type
+      });
 
       isPending.value = false;
 
@@ -142,7 +152,8 @@ export default defineComponent({
       // NOTE: Need to catch this event with @close in parent where
       // I embed <DeleteMember @close="showDeleteMemberModal = false" />
       if (!error.value) {
-        console.log("DELETED account. EMITTING to parent");
+        console.log("PASSED:handleDeleteAccount:!error.value");
+        console.log("DELETED account. EMITTING 'close' to parent");
         context.emit("close");
       }
     }
