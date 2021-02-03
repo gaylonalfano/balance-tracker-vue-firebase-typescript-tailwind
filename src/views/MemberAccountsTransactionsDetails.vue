@@ -177,7 +177,18 @@
           <!--   </div> -->
           <!-- </dl> -->
           <!-- Account Stats Card -->
-          <AccountDetailsStatsCard :member="member" />
+          <!-- UPDATE: After adding :account to AccountDetailsStatsCard, I now need to v-for over the -->
+          <!-- member  accounts, otherwise :account="type" isn't enough and account will be undefined -->
+          <dl class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <div
+              v-for="account in member.accounts"
+              :key="account"
+              class="flex flex-col overflow-hidden bg-white rounded-lg shadow"
+            >
+              <AccountDetailsStatsCard :member="member" :account="account" />
+            </div>
+          </dl>
+          <!-- <AccountDetailsStatsCard :member="member" :account="type" /> -->
           <!-- <!-1- Top part of AccountDetailsStatsCard -1-> -->
           <!-- <dl class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3"> -->
           <!--   <div -->
