@@ -66,7 +66,7 @@
               class="text-lg leading-6 font-medium text-gray-900"
               id="modal-headline"
             >
-              type: {{ type }} -- member id: {{ id }}
+              type: {{ account.type }} -- member id: {{ member.id }}
             </h3>
             <div class="mt-2">
               <p class="text-sm text-gray-500">
@@ -86,7 +86,7 @@
             Delete
           </button>
           <button
-            @click="handleCancel"
+            @click="$emit('close')"
             type="button"
             class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:w-auto sm:text-sm"
           >
@@ -106,24 +106,29 @@ import useDocument from "@/composables/useDocument";
 
 export default defineComponent({
   name: "DeleteAccountModal",
-  props: ["id", "type"],
+  props: ["member", "account"], // Old w/ routes ["id", "type"]
   emits: ["close"],
   setup(props, context) {
+    // UPDATE Reworked my v-for in StatsCard so now I can pass "member" and "account"
+    // as props instead of relying on route.params.id and route.params.type
     // We already have the member object via props. Let's pull in useDocument()
     // so we can update member doc
-    // ==== FAILED: Just passing 'member' and 'account'
-    // const { updateDoc, error, isPending } = useDocument("members", props.member.id);
+    // ==== UPDATE: Just passing 'member' and 'account'
+    const { updateDoc, error, isPending } = useDocument(
+      "members",
+      props.member.id
+    );
 
-    // ==== UPDATE I was passing member as prop. Now it's just id and type for route.params
-    const { updateDoc, error, isPending } = useDocument("members", props.id);
+    // ==== OLD UPDATE I was passing member as prop. Now it's just id and type for route.params
+    // const { updateDoc, error, isPending } = useDocument("members", props.id);
 
     // Get a router to reroute
-    const router = useRouter();
+    // const router = useRouter();
 
     // Handle Cancel reroute back
-    function handleCancel() {
-      router.go(-1);
-    }
+    // function handleCancel() {
+    //   router.go(-1);
+    // }
 
     // Handler for deleting member.accounts[account] property
     async function handleDeleteAccount() {
@@ -144,7 +149,9 @@ export default defineComponent({
       // A: Yes, you can pass multiple props. However, I had to use a router-link to
       // correctly retrieve the account type. My v-for in StatsCard only gets the LAST account
       await updateDoc({
-        [`accounts.${props.type}`]: firebase.firestore.FieldValue.delete(),
+        // [`accounts.${props.type}`]: firebase.firestore.FieldValue.delete(),
+        // [`accounts.${props.account}`]: firebase.firestore.FieldValue.delete(), // FS Failed
+        [`accounts.${props.account.type}`]: firebase.firestore.FieldValue.delete(), // Works! Needed .type
       });
 
       isPending.value = false;
@@ -155,15 +162,19 @@ export default defineComponent({
       // router to go back but this may be better.
       // NOTE: Need to catch this event with @close in parent where
       // I embed <DeleteMember @close="showDeleteMemberModal = false" />
-      // UPDATE If you DO use a ROUTE, then yes, you need to reroute
       if (!error.value) {
         console.log("PASSED:handleDeleteAccount:!error.value");
+        // UPDATE Emitting 'close' event to parent (instead of reroute)
+        console.log("DELETED account. EMITTING 'close' to parent");
+        context.emit("close");
+
+        // NOTE If you DO use a ROUTE, then yes, you need to reroute
         // Re-route back to /dashboard
-        router.push({ name: "Dashboard" });
+        // router.push({ name: "Dashboard" });
       }
     }
 
-    return { error, isPending, handleDeleteAccount, handleCancel };
+    return { error, isPending, handleDeleteAccount };
   },
 });
 </script>

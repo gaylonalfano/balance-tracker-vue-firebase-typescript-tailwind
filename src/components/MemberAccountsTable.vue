@@ -39,17 +39,20 @@
     </div>
   </div>
   <!-- Account Details Stats Card -->
-  <!-- FIXME I should refactor to v-for loop over member.accounts HERE -->
+  <!-- UPDATE I refactored v-for loop over member.accounts UP to here instead of inside child component -->
   <!-- instead of within AccountDetailsStatsCard! Should pass :member AND :account props -->
   <!-- Q: Should :key be account or account.type? -->
-  <!-- A: I think account.... -->
-  <div
-    v-for="account in member.accounts"
-    :key="account"
-    class="flex flex-col bg-white overflow-hidden shadow rounded-lg"
-  >
-    <AccountDetailsStatsCard :member="member" :account="account" />
-  </div>
+  <!-- A: I think account... Yep, seems to work! -->
+  <!-- UPDATE: Had to move <dl> and <div> UP to this component for styling -->
+  <dl class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <div
+      v-for="account in member.accounts"
+      :key="account"
+      class="flex flex-col bg-white overflow-hidden shadow rounded-lg"
+    >
+      <AccountDetailsStatsCard :member="member" :account="account" />
+    </div>
+  </dl>
   <!-- Add Account Modal Form Button Toggle -->
   <div class="justify-center mt-5 py-2 sm:mt-4 sm:flex sm:flex-row-reverse">
     <button
