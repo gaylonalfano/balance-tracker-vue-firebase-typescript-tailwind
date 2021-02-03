@@ -8,7 +8,7 @@
   <main class="bg-indigo-100">
     <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
       <!-- Member cards -->
-      <ul class="space-y-3" v-for="member in members" :key="member.id">
+      <ul v-for="member in members" :key="member.id" class="space-y-3">
         <li
           class="bg-white shadow overflow-hidden px-4 py-4 m-6 sm:px-6 sm:rounded-md"
         >

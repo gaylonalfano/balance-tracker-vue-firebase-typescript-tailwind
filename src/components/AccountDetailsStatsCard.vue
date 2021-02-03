@@ -1,8 +1,11 @@
 <template>
   <dl class="mt-2 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+    <!-- Error: Getting only last item in array since :key=account.type isn't unique! -->
+    <!-- Originally moved on and used router-links with :key=account.type but want to see if I can fix -->
+    <!-- I believe :key=account is actually more unique since  'type' prop is the same for ALL accounts -->
     <div
       v-for="account in member.accounts"
-      :key="account.type"
+      :key="account"
       class="flex flex-col bg-white overflow-hidden shadow rounded-lg"
     >
       <!-- Wrap a router-link around top portion of card to go to details -->
@@ -99,6 +102,37 @@
           >
             Delete
           </router-link>
+          <!-- Testing out embedding DeleteAccount and passing member and account as PROPS -->
+          <!-- instead of using a router-link -->
+          <div class="ml-4 mt-2 flex-shrink-0 space-x-4">
+            <button
+              @click="showDeleteAccount = true"
+              type="button"
+              class="inline-flex items-center p-1 border border-transparent rounded-full shadow-sm text-white bg-red-500 hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="currentColor"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 12H4"
+                ></path>
+              </svg>
+            </button>
+            <!-- Add Delete Member Modal -->
+            <DeleteAccount
+              v-if="showDeleteAccount"
+              :member="member"
+              :account="account"
+              @close="showDeleteAccount = false"
+            />
+          </div>
         </div>
       </div>
     </div>
@@ -108,11 +142,18 @@
 <script lang="ts">
 import { defineComponent, ref } from "vue";
 import DeleteAccountModal from "@/views/DeleteAccountModal.vue";
+import DeleteAccount from "@/views/DeleteAccount.vue";
 
 export default defineComponent({
   name: "AccountDetailsStatsCard",
-  components: { DeleteAccountModal },
+  components: { DeleteAccountModal, DeleteAccount },
   props: ["member"],
+  setup(props) {
+    // Show DeleteAccount (NOT DeleteAccountModal!) boolean ref
+    const showDeleteAccount = ref<boolean>(false);
+
+    return { showDeleteAccount };
+  },
 });
 </script>
 

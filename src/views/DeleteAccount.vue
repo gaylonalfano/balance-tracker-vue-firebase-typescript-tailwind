@@ -66,7 +66,7 @@
               class="text-lg leading-6 font-medium text-gray-900"
               id="modal-headline"
             >
-              Delete account type: {{ type }} -- member: {{ id }}
+              Delete account type: {{ account.type }} -- member: {{ member.id }}
             </h3>
             <div class="mt-2">
               <p class="text-sm text-gray-500">
@@ -104,13 +104,16 @@ import useDocument from "@/composables/useDocument";
 
 export default defineComponent({
   name: "DeleteAccount",
-  props: ["id", "type"],
+  props: ["member", "account"], // Originally, ["id", "type"] from route.params
   emits: ["close"],
   setup(props, context) {
     // We already have the member object via props. Let's pull in useDocument()
     // so we can update member doc
     // UPDATE I was passing member as prop. Now it's just id and type for route.params
-    const { updateDoc, error, isPending } = useDocument("members", props.id);
+    const { updateDoc, error, isPending } = useDocument(
+      "members",
+      props.member.id
+    ); // Or, props.id if using router-link instead of passing props
 
     // Handler for deleting member.accounts[account] property
     async function handleDeleteAccount() {
