@@ -263,6 +263,7 @@
         >
           Recent activity
         </h2>
+        <!-- <button @click="handleFilterByAccount">Filter by Account</button> -->
 
         <!-- Activity list (smallest breakopoint only) -->
         <!-- This WILL display rows even at smallest viewport -->
@@ -532,12 +533,13 @@ import { db } from "@/firebase/config";
 import { format } from "date-fns";
 import Navbar from "@/components/Navbar.vue";
 import AccountDetailsStatsCard from "@/components/AccountDetailsStatsCard.vue";
+import TransactionsDetailsTable from "@/components/TransactionsDetailsTable.vue";
 import getDocument from "@/composables/getDocument";
 import getCollection from "@/composables/getCollection";
 
 export default defineComponent({
   name: "MemberAccountsTransactionsDetails",
-  components: { Navbar, AccountDetailsStatsCard },
+  components: { Navbar, AccountDetailsStatsCard, TransactionsDetailsTable },
   props: ["id", "type"],
   setup(props) {
     // Get a router instance to force reload/reroute
@@ -557,7 +559,7 @@ export default defineComponent({
       // router.go(0); // Error INFINITE LOOP!
     });
 
-    // Let's get our full member document
+    // Let's get our full member document to pass to embedded AccountDetailsStatsCard
     const { document: member, error: errorGetDocument } = getDocument(
       "members",
       props.id
