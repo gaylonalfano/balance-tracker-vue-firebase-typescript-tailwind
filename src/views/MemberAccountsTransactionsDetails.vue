@@ -254,259 +254,261 @@
         </div>
       </div>
 
+      <TransactionsDetailsTable :transactions="transactionsQueriedInitial" />
+      <!-- UPDATE Trying to replace entire table with TransactionsDetailsTable component -->
       <!-- Wrap entire table with div :key="type" to rerender when type changes -->
       <!-- https://michaelnthiessen.com/key-changing-technique/ -->
       <!-- <div :key="type"> -->
-      <div :key="$route.params.type">
-        <h2
-          class="max-w-6xl px-4 mx-auto mt-8 text-lg font-medium text-gray-900 leading-6 sm:px-6 lg:px-8"
-        >
-          Recent activity
-        </h2>
-        <!-- <button @click="handleFilterByAccount">Filter by Account</button> -->
+      <!-- <div :key="$route.params.type"> -->
+      <!--   <h2 -->
+      <!--     class="max-w-6xl px-4 mx-auto mt-8 text-lg font-medium text-gray-900 leading-6 sm:px-6 lg:px-8" -->
+      <!--   > -->
+      <!--     Recent activity -->
+      <!--   </h2> -->
+      <!--   <!-1- <button @click="handleFilterByAccount">Filter by Account</button> -1-> -->
 
-        <!-- Activity list (smallest breakopoint only) -->
-        <!-- This WILL display rows even at smallest viewport -->
-        <div class="shadow sm:hidden">
-          <ul
-            v-for="transaction in transactionsQueriedInitial"
-            :key="transaction.id"
-            class="mt-2 overflow-hidden shadow divide-y divide-gray-200 sm:hidden"
-          >
-            <li>
-              <div class="block px-4 py-4 bg-white hover:bg-gray-50">
-                <span class="flex items-center space-x-4">
-                  <span class="flex flex-1 truncate space-x-2">
-                    <!-- Heroicon name: cash -->
-                    <svg
-                      class="flex-shrink-0 w-5 h-5 text-gray-400"
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fill-rule="evenodd"
-                        d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-                        clip-rule="evenodd"
-                      />
-                    </svg>
-                    <span class="flex flex-col text-sm text-gray-500 truncate">
-                      <!-- <span class="truncate">{{ transaction.accountType }}</span> -->
-                      <!-- Colored background 'pill'. Could make dynamic based on Account Type -->
-                      <span
-                        class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize"
-                      >
-                        {{ transaction.accountType }}
-                      </span>
-                      <span
-                        ><span class="font-medium text-gray-900"
-                          >${{ transaction.transactionAmount }}</span
-                        >
-                        RMB</span
-                      >
-                      <span>{{
-                        format(transaction.createdAt.toDate(), "MM/dd/yyyy")
-                      }}</span>
-                    </span>
-                  </span>
-                  <!-- Heroicon name: chevron-right -->
-                  <!-- <svg -->
-                  <!--   class="flex-shrink-0 w-5 h-5 text-gray-400" -->
-                  <!--   xmlns="http://www.w3.org/2000/svg" -->
-                  <!--   viewBox="0 0 20 20" -->
-                  <!--   fill="currentColor" -->
-                  <!--   aria-hidden="true" -->
-                  <!-- > -->
-                  <!--   <path -->
-                  <!--     fill-rule="evenodd" -->
-                  <!--     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" -->
-                  <!--     clip-rule="evenodd" -->
-                  <!--   /> -->
-                  <!-- </svg> -->
-                </span>
-              </div>
-            </li>
+      <!--   <!-1- Activity list (smallest breakopoint only) -1-> -->
+      <!--   <!-1- This WILL display rows even at smallest viewport -1-> -->
+      <!--   <div class="shadow sm:hidden"> -->
+      <!--     <ul -->
+      <!--       v-for="transaction in transactionsQueriedInitial" -->
+      <!--       :key="transaction.id" -->
+      <!--       class="mt-2 overflow-hidden shadow divide-y divide-gray-200 sm:hidden" -->
+      <!--     > -->
+      <!--       <li> -->
+      <!--         <div class="block px-4 py-4 bg-white hover:bg-gray-50"> -->
+      <!--           <span class="flex items-center space-x-4"> -->
+      <!--             <span class="flex flex-1 truncate space-x-2"> -->
+      <!--               <!-1- Heroicon name: cash -1-> -->
+      <!--               <svg -->
+      <!--                 class="flex-shrink-0 w-5 h-5 text-gray-400" -->
+      <!--                 xmlns="http://www.w3.org/2000/svg" -->
+      <!--                 viewBox="0 0 20 20" -->
+      <!--                 fill="currentColor" -->
+      <!--                 aria-hidden="true" -->
+      <!--               > -->
+      <!--                 <path -->
+      <!--                   fill-rule="evenodd" -->
+      <!--                   d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" -->
+      <!--                   clip-rule="evenodd" -->
+      <!--                 /> -->
+      <!--               </svg> -->
+      <!--               <span class="flex flex-col text-sm text-gray-500 truncate"> -->
+      <!--                 <!-1- <span class="truncate">{{ transaction.accountType }}</span> -1-> -->
+      <!--                 <!-1- Colored background 'pill'. Could make dynamic based on Account Type -1-> -->
+      <!--                 <span -->
+      <!--                   class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize" -->
+      <!--                 > -->
+      <!--                   {{ transaction.accountType }} -->
+      <!--                 </span> -->
+      <!--                 <span -->
+      <!--                   ><span class="font-medium text-gray-900" -->
+      <!--                     >${{ transaction.transactionAmount }}</span -->
+      <!--                   > -->
+      <!--                   RMB</span -->
+      <!--                 > -->
+      <!--                 <span>{{ -->
+      <!--                   format(transaction.createdAt.toDate(), "MM/dd/yyyy") -->
+      <!--                 }}</span> -->
+      <!--               </span> -->
+      <!--             </span> -->
+      <!--             <!-1- Heroicon name: chevron-right -1-> -->
+      <!--             <!-1- <svg -1-> -->
+      <!--             <!-1-   class="flex-shrink-0 w-5 h-5 text-gray-400" -1-> -->
+      <!--             <!-1-   xmlns="http://www.w3.org/2000/svg" -1-> -->
+      <!--             <!-1-   viewBox="0 0 20 20" -1-> -->
+      <!--             <!-1-   fill="currentColor" -1-> -->
+      <!--             <!-1-   aria-hidden="true" -1-> -->
+      <!--             <!-1- > -1-> -->
+      <!--             <!-1-   <path -1-> -->
+      <!--             <!-1-     fill-rule="evenodd" -1-> -->
+      <!--             <!-1-     d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" -1-> -->
+      <!--             <!-1-     clip-rule="evenodd" -1-> -->
+      <!--             <!-1-   /> -1-> -->
+      <!--             <!-1- </svg> -1-> -->
+      <!--           </span> -->
+      <!--         </div> -->
+      <!--       </li> -->
 
-            <!-- More items... -->
-          </ul>
+      <!--       <!-1- More items... -1-> -->
+      <!--     </ul> -->
 
-          <nav
-            class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200"
-            aria-label="Pagination"
-          >
-            <div class="flex justify-between flex-1">
-              <a
-                href="#"
-                class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500"
-              >
-                Previous
-              </a>
-              <a
-                href="#"
-                class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500"
-              >
-                Next
-              </a>
-            </div>
-          </nav>
-        </div>
+      <!--     <nav -->
+      <!--       class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200" -->
+      <!--       aria-label="Pagination" -->
+      <!--     > -->
+      <!--       <div class="flex justify-between flex-1"> -->
+      <!--         <a -->
+      <!--           href="#" -->
+      <!--           class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500" -->
+      <!--         > -->
+      <!--           Previous -->
+      <!--         </a> -->
+      <!--         <a -->
+      <!--           href="#" -->
+      <!--           class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500" -->
+      <!--         > -->
+      <!--           Next -->
+      <!--         </a> -->
+      <!--       </div> -->
+      <!--     </nav> -->
+      <!--   </div> -->
 
-        <!-- Activity table (small breakopoint and up) -->
-        <!-- Without this, ONLY smallest viewport displays transaction rows -->
-        <div class="hidden sm:block">
-          <div class="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8">
-            <div class="flex flex-col mt-2">
-              <div
-                class="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg"
-              >
-                <table class="min-w-full divide-y divide-gray-200">
-                  <!-- Define the static table column headers -->
-                  <thead>
-                    <tr>
-                      <th
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
-                      >
-                        Transaction
-                      </th>
-                      <th
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase bg-gray-50"
-                      >
-                        Amount
-                      </th>
-                      <th
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50 md:block"
-                      >
-                        Account
-                      </th>
-                      <th
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50"
-                      >
-                        Balance
-                      </th>
-                      <th
-                        class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase bg-gray-50"
-                      >
-                        Date
-                      </th>
-                    </tr>
-                  </thead>
-                  <!-- Loop over transactions -->
-                  <!-- Experimenting with filtered transactions (original v-for is transaction in transactions) -->
-                  <!-- v-for="transaction in computedTransactionsUsingGetCollectionWithRouteParams" -->
-                  <tbody
-                    v-for="transaction in transactionsQueriedInitial"
-                    :key="transaction.id"
-                    class="bg-white divide-y divide-gray-200"
-                  >
-                    <tr class="bg-white">
-                      <td
-                        class="w-full px-6 py-4 text-sm text-gray-900 max-w-0 whitespace-nowrap"
-                      >
-                        <div class="flex">
-                          <div
-                            class="inline-flex text-sm truncate group space-x-2"
-                          >
-                            <!-- Heroicon name: cash -->
-                            <svg
-                              class="flex-shrink-0 w-5 h-5 text-gray-400 group-hover:text-gray-500"
-                              xmlns="http://www.w3.org/2000/svg"
-                              viewBox="0 0 20 20"
-                              fill="currentColor"
-                              aria-hidden="true"
-                            >
-                              <path
-                                fill-rule="evenodd"
-                                d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z"
-                                clip-rule="evenodd"
-                              />
-                            </svg>
-                            <p
-                              class="text-gray-500 truncate group-hover:text-gray-900"
-                            >
-                              {{ transaction.notes }}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td
-                        class="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap"
-                      >
-                        <span class="font-medium text-gray-900"
-                          >¥{{ transaction.transactionAmount }}
-                        </span>
-                        RMB
-                      </td>
-                      <td
-                        class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap md:block"
-                      >
-                        <!-- Colored background 'pill'. Could make dynamic based on Account Type -->
-                        <span
-                          class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize"
-                        >
-                          {{ transaction.accountType }}
-                        </span>
-                      </td>
-                      <td
-                        class="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap"
-                      >
-                        <span class="font-medium text-gray-900"
-                          >¥{{ transaction.currentBalance }}
-                        </span>
-                        RMB
-                      </td>
-                      <!-- <td -->
-                      <!--   class="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap" -->
-                      <!-- > -->
-                      <!--   ¥{{ transaction.currentBalance }} -->
-                      <!-- </td> -->
-                      <td
-                        class="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap"
-                      >
-                        {{
-                          format(transaction.createdAt.toDate(), "MM/dd/yyyy")
-                        }}
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-                <!-- Pagination -->
-                <nav
-                  class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6"
-                  aria-label="Pagination"
-                >
-                  <div class="hidden sm:block">
-                    <p class="text-sm text-gray-700">
-                      Showing
-                      <span class="font-medium">1</span>
-                      to
-                      <span class="font-medium">10</span>
-                      of
-                      <!-- Make results a calculated total of transactions -->
-                      <span class="font-medium">20</span>
-                      results
-                    </p>
-                  </div>
-                  <div class="flex justify-between flex-1 sm:justify-end">
-                    <a
-                      href="#"
-                      class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                    >
-                      Previous
-                    </a>
-                    <a
-                      href="#"
-                      class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                    >
-                      Next
-                    </a>
-                  </div>
-                </nav>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <!--   <!-1- Activity table (small breakopoint and up) -1-> -->
+      <!--   <!-1- Without this, ONLY smallest viewport displays transaction rows -1-> -->
+      <!--   <div class="hidden sm:block"> -->
+      <!--     <div class="max-w-6xl px-4 mx-auto sm:px-6 lg:px-8"> -->
+      <!--       <div class="flex flex-col mt-2"> -->
+      <!--         <div -->
+      <!--           class="min-w-full overflow-hidden overflow-x-auto align-middle shadow sm:rounded-lg" -->
+      <!--         > -->
+      <!--           <table class="min-w-full divide-y divide-gray-200"> -->
+      <!--             <!-1- Define the static table column headers -1-> -->
+      <!--             <thead> -->
+      <!--               <tr> -->
+      <!--                 <th -->
+      <!--                   class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50" -->
+      <!--                 > -->
+      <!--                   Transaction -->
+      <!--                 </th> -->
+      <!--                 <th -->
+      <!--                   class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase bg-gray-50" -->
+      <!--                 > -->
+      <!--                   Amount -->
+      <!--                 </th> -->
+      <!--                 <th -->
+      <!--                   class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50 md:block" -->
+      <!--                 > -->
+      <!--                   Account -->
+      <!--                 </th> -->
+      <!--                 <th -->
+      <!--                   class="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase bg-gray-50" -->
+      <!--                 > -->
+      <!--                   Balance -->
+      <!--                 </th> -->
+      <!--                 <th -->
+      <!--                   class="px-6 py-3 text-xs font-medium tracking-wider text-right text-gray-500 uppercase bg-gray-50" -->
+      <!--                 > -->
+      <!--                   Date -->
+      <!--                 </th> -->
+      <!--               </tr> -->
+      <!--             </thead> -->
+      <!--             <!-1- Loop over transactions -1-> -->
+      <!--             <!-1- Experimenting with filtered transactions (original v-for is transaction in transactions) -1-> -->
+      <!--             <!-1- v-for="transaction in computedTransactionsUsingGetCollectionWithRouteParams" -1-> -->
+      <!--             <tbody -->
+      <!--               v-for="transaction in transactionsQueriedInitial" -->
+      <!--               :key="transaction.id" -->
+      <!--               class="bg-white divide-y divide-gray-200" -->
+      <!--             > -->
+      <!--               <tr class="bg-white"> -->
+      <!--                 <td -->
+      <!--                   class="w-full px-6 py-4 text-sm text-gray-900 max-w-0 whitespace-nowrap" -->
+      <!--                 > -->
+      <!--                   <div class="flex"> -->
+      <!--                     <div -->
+      <!--                       class="inline-flex text-sm truncate group space-x-2" -->
+      <!--                     > -->
+      <!--                       <!-1- Heroicon name: cash -1-> -->
+      <!--                       <svg -->
+      <!--                         class="flex-shrink-0 w-5 h-5 text-gray-400 group-hover:text-gray-500" -->
+      <!--                         xmlns="http://www.w3.org/2000/svg" -->
+      <!--                         viewBox="0 0 20 20" -->
+      <!--                         fill="currentColor" -->
+      <!--                         aria-hidden="true" -->
+      <!--                       > -->
+      <!--                         <path -->
+      <!--                           fill-rule="evenodd" -->
+      <!--                           d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" -->
+      <!--                           clip-rule="evenodd" -->
+      <!--                         /> -->
+      <!--                       </svg> -->
+      <!--                       <p -->
+      <!--                         class="text-gray-500 truncate group-hover:text-gray-900" -->
+      <!--                       > -->
+      <!--                         {{ transaction.notes }} -->
+      <!--                       </p> -->
+      <!--                     </div> -->
+      <!--                   </div> -->
+      <!--                 </td> -->
+      <!--                 <td -->
+      <!--                   class="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap" -->
+      <!--                 > -->
+      <!--                   <span class="font-medium text-gray-900" -->
+      <!--                     >¥{{ transaction.transactionAmount }} -->
+      <!--                   </span> -->
+      <!--                   RMB -->
+      <!--                 </td> -->
+      <!--                 <td -->
+      <!--                   class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap md:block" -->
+      <!--                 > -->
+      <!--                   <!-1- Colored background 'pill'. Could make dynamic based on Account Type -1-> -->
+      <!--                   <span -->
+      <!--                     class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 capitalize" -->
+      <!--                   > -->
+      <!--                     {{ transaction.accountType }} -->
+      <!--                   </span> -->
+      <!--                 </td> -->
+      <!--                 <td -->
+      <!--                   class="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap" -->
+      <!--                 > -->
+      <!--                   <span class="font-medium text-gray-900" -->
+      <!--                     >¥{{ transaction.currentBalance }} -->
+      <!--                   </span> -->
+      <!--                   RMB -->
+      <!--                 </td> -->
+      <!--                 <!-1- <td -1-> -->
+      <!--                 <!-1-   class="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap" -1-> -->
+      <!--                 <!-1- > -1-> -->
+      <!--                 <!-1-   ¥{{ transaction.currentBalance }} -1-> -->
+      <!--                 <!-1- </td> -1-> -->
+      <!--                 <td -->
+      <!--                   class="px-6 py-4 text-sm text-right text-gray-500 whitespace-nowrap" -->
+      <!--                 > -->
+      <!--                   {{ -->
+      <!--                     format(transaction.createdAt.toDate(), "MM/dd/yyyy") -->
+      <!--                   }} -->
+      <!--                 </td> -->
+      <!--               </tr> -->
+      <!--             </tbody> -->
+      <!--           </table> -->
+      <!--           <!-1- Pagination -1-> -->
+      <!--           <nav -->
+      <!--             class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6" -->
+      <!--             aria-label="Pagination" -->
+      <!--           > -->
+      <!--             <div class="hidden sm:block"> -->
+      <!--               <p class="text-sm text-gray-700"> -->
+      <!--                 Showing -->
+      <!--                 <span class="font-medium">1</span> -->
+      <!--                 to -->
+      <!--                 <span class="font-medium">10</span> -->
+      <!--                 of -->
+      <!--                 <!-1- Make results a calculated total of transactions -1-> -->
+      <!--                 <span class="font-medium">20</span> -->
+      <!--                 results -->
+      <!--               </p> -->
+      <!--             </div> -->
+      <!--             <div class="flex justify-between flex-1 sm:justify-end"> -->
+      <!--               <a -->
+      <!--                 href="#" -->
+      <!--                 class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" -->
+      <!--               > -->
+      <!--                 Previous -->
+      <!--               </a> -->
+      <!--               <a -->
+      <!--                 href="#" -->
+      <!--                 class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" -->
+      <!--               > -->
+      <!--                 Next -->
+      <!--               </a> -->
+      <!--             </div> -->
+      <!--           </nav> -->
+      <!--         </div> -->
+      <!--       </div> -->
+      <!--     </div> -->
+      <!--   </div> -->
+      <!-- </div> -->
     </main>
   </div>
   <div v-else>

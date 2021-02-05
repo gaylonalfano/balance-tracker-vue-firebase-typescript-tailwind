@@ -19,7 +19,7 @@
         :key="transaction.id"
         class="mt-2 overflow-hidden shadow divide-y divide-gray-200 sm:hidden"
       >
-        <!-- Could be TransactionDetailsRow :transactions="transactions" :type="accountType" -->
+        <!-- TODO Could be TransactionDetailsRow :transactions="transactions" :type="accountType" -->
         <li>
           <div class="block px-4 py-4 bg-white hover:bg-gray-50">
             <span class="flex items-center space-x-4">
@@ -142,7 +142,7 @@
               <!-- Experimenting with filtered transactions (original v-for is transaction in transactions) -->
               <!-- v-for="transaction in computedTransactionsUsingGetCollectionWithRouteParams" -->
               <tbody
-                v-for="transaction in transactionsQueriedInitial"
+                v-for="transaction in transactions"
                 :key="transaction.id"
                 class="bg-white divide-y divide-gray-200"
               >
@@ -263,6 +263,8 @@ export default defineComponent({
     onMounted(() => console.log("MOUNTED"));
     onUnmounted(() => console.log("UNMOUNTED"));
     onUpdated(() => console.log("UPDATED"));
+
+    return { format };
   },
 });
 </script>
