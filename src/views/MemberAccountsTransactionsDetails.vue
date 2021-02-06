@@ -1,9 +1,28 @@
 <template>
   <Navbar />
+  <!-- <h1>Testing getCollection without the Query param as an option</h1> -->
+  <!-- <!-1- <div v-if="transactions"> -1-> -->
+  <!-- <!-1-   <div v-for="transaction in transactions" :key="transaction.id"> -1-> -->
+  <!-- <!-1-     <p>t.id: {{ transaction.id }}</p> -1-> -->
+  <!-- <!-1-     <p>t.accountType: {{ transaction.accountType }}</p> -1-> -->
+  <!-- <!-1-   </div> -1-> -->
+  <!-- <!-1- </div> -1-> -->
+  <!-- <br /> -->
+  <!-- <div v-if="computedTransactionsWithComposableApplyingFilter"> -->
+  <!--   <div -->
+  <!--     v-for="transaction in computedTransactionsWithComposableApplyingFilter" -->
+  <!--     :key="transaction.id" -->
+  <!--   > -->
+  <!--     <p>t.id: {{ transaction.id }}</p> -->
+  <!--     <p>t.accountType: {{ transaction.accountType }}</p> -->
+  <!--   </div> -->
+  <!-- </div> -->
+  <!-- <div v-else>NO DATA</div> -->
   <!-- <h1>Testing watchEffect() + route.params + FS Query</h1> -->
   <!-- <div v-if="transactionsQueriedInitial"> -->
   <!--   transactionsQueriedInitial: {{ transactionsQueriedInitial }} -->
   <!-- </div> -->
+  <!-- <br /> -->
   <!-- <h3>type: {{ type }}</h3> -->
   <!-- <h3>$route.params.type: {{ $route.params.type }}</h3> -->
   <!-- <h1>Testing computed() route and transactions</h1> -->
@@ -36,7 +55,7 @@
   <!-- </div> -->
 
   <!-- Page header -->
-  <div v-if="member && transactionsQueriedInitial">
+  <div v-if="member && transactions">
     <header class="relative z-0 flex-1 overflow-y-auto">
       <div class="bg-white shadow">
         <div class="px-4 sm:px-6 lg:max-w-6xl lg:mx-auto lg:px-8">
@@ -254,7 +273,7 @@
         </div>
       </div>
 
-      <TransactionsDetailsTable :transactions="transactionsQueriedInitial" />
+      <TransactionsDetailsTable :transactions="transactions" />
       <!-- UPDATE Trying to replace entire table with TransactionsDetailsTable component -->
       <!-- Wrap entire table with div :key="type" to rerender when type changes -->
       <!-- https://michaelnthiessen.com/key-changing-technique/ -->
@@ -538,6 +557,7 @@ import AccountDetailsStatsCard from "@/components/AccountDetailsStatsCard.vue";
 import TransactionsDetailsTable from "@/components/TransactionsDetailsTable.vue";
 import getDocument from "@/composables/getDocument";
 import getCollection from "@/composables/getCollection";
+import getCollectionWithQuery from "@/composables/getCollectionWithQuery";
 
 export default defineComponent({
   name: "MemberAccountsTransactionsDetails",
@@ -574,110 +594,110 @@ export default defineComponent({
     // Q: Use props.id or member.value.id?
     // A: Use props.id! I already have it so don't have to wait for member
     // A: member.value?.id doesn't load as fast or at all if not within v-if
-    const {
-      documents: transactionsQueriedInitial,
-      error: errorGetCollectionQueriedInitial,
-    } = getCollection(`members/${props.id}/transactions`, [
-      "accountType",
-      "==",
-      props.type,
-    ]);
-
-    // Let's get a route object to track
-    // UPDATE: Not needed since I can watch props.type since my cards are wrapped
-    // with the same router-links!
-    const route = useRoute();
-
-    // Q: What about using watchEffect() instead of computed() to track changs in route.params?
-    // Then go our and refetch the data from FS?
-    watchEffect(() => {
-      // Q: Will this run when route changes even though it's not a Ref? Is route reactive?
-      // A: Yes! // Works. Shows my params object e.g, {id: "cfqL....", type: "giving"}
-      // NOTE This may not be ideal though because it fires EVERY TIME route changes...
-      // I believe I could add a conditional i.e., if(route.params.type) { watchEffect(() => ...)}
-      // UPDATE No conditional needed! Just be more granular i.e., route.params.type instead of just route.params
-      // console.log("watchEffect ran! route.params.type changed!", route.params.type);
-      // Q: Will it track my props.type change? I don't believe so since they're coming from parent Dashboard...
-      // A: Yes! Interesting... it's because my cards are wrapped with the same router-links!
-      console.log("watchEffect ran! props.type changed!", props.type);
-
-      // Now let's see if we can refetch data from FS...
-      // ===== Re-executing getCollection() + FS query =====
-      // NOTE Seems I MUST have an initial getCollection() OUTSIDE of watchEffect()
-      // Otherwise it errors saying it can't find transactions even though they're defined here.
-      // Therefore, I'm making another getCollection() inside but with a new variable name
-      // e.g., (Initial vs. Updated). This means I need to do some v-if logic with these two
-      // arrays of documents.
-      // A: CAN'T DO THIS! These inner scoped vars can't be found and returned by setup()!
-      // let {
-      //   documents: transactionsQueriedUpdatedOnWatchEffect,
-      //   error: errorGetCollectionQueriedUpdatedOnWatchEffect,
-      // } = await getCollection(`members/${props.id}/transactions`, [
-      //   "accountType",
-      //   "==",
-      //   props.type,
-      // ]);
-      // console.log(
-      //   "transactionsQueriedUpdatedOnWatchEffect.value",
-      //   transactionsQueriedUpdatedOnWatchEffect.value
-      // );
-
-      // return (
-      //   await transactionsQueriedUpdatedOnWatchEffect,
-      //   errorGetCollectionQueriedUpdatedOnWatchEffect
-      // );
-
-      // ===== Force a reload/rerender/refresh of the page =====
-      // NOTE I noticed that after clicking a new account.type, if I make a code change and save,
-      // the hot-reloading will refresh the page and my recent activity table updates with the right
-      // account.type displayed!
-      // Q: What's the best way to reload/rerender/refresh a page in Vue?
-      // A: Some ways are better than others. this.$forceUpdate() or :key seems to be preferred
-      // https://michaelnthiessen.com/force-re-render/
-      // NOTE I tried the :key="type" approach by wrapping a <div :key="type"> around entire recent
-      // activity table. No luck.
-      // NOTE Using this.$forceUpdate() is only available inside methods: Options API
-      // Let's try using a router instance to reload/reroute
-      // location.reload() // BAD! Infinite loop terrible approach!
-      // Q: What about router.push?
-      // A: Nope!
-      // router.push({ name: "MemberAccountsTransactionsDetails" }); // Nope
-      // Q: What about router.push with params?
-      // A: Nope! Doesn't seem to matter....
-      // router.push({
-      //   name: "MemberAccountsTransactionsDetails",
-      //   params: { id: props.id, type: props.type },
-      // });
-      // router.replace({ name: "MemberAccountsTransactionsDetails" }); // Nope
-    });
-
-    // // ======== Using Composable (No FS Query) =======
-    // // ==== IMPORTANT: Everything below is troubleshooting. Lots learned but nothing ever worked!
-    // // Let's get our member's transactions collection
-    // // Q: Use props.id or member.value.id?
-    // // A: Use props.id! I already have it so don't have to wait for member
-    // // A: member.value?.id doesn't load as fast or at all if not within v-if
     // const {
-    //   documents: transactions,
-    //   error: errorGetCollection,
-    // } = getCollection(`members/${props.id}/transactions`); // Works!
-    // // console.log("transactions", transactions.value);
-    // // console.log("props", props);
+    //   documents: transactionsQueriedInitial,
+    //   error: errorGetCollectionQueriedInitial,
+    // } = getCollection(`members/${props.id}/transactions`, [
+    //   "accountType",
+    //   "==",
+    //   props.type,
+    // ]);
 
-    // // Q: How could I make my transactions table update based on which account.type is clicked?
-    // // Could I get all transactions and somehow use computed() along with route.params?
+    // // Let's get a route object to track
+    // // UPDATE: Not needed since I can watch props.type since my cards are wrapped
+    // // with the same router-links!
     // const route = useRoute();
-    // // Q: Do I need to watch() my route? Or will route.params auto update when I click a different card?
-    // // A: Don't think it's needed. route.params already captures the changes instantly.
+
+    // // Q: What about using watchEffect() instead of computed() to track changs in route.params?
+    // // Then go our and refetch the data from FS?
+    // watchEffect(() => {
+    //   // Q: Will this run when route changes even though it's not a Ref? Is route reactive?
+    //   // A: Yes! // Works. Shows my params object e.g, {id: "cfqL....", type: "giving"}
+    //   // NOTE This may not be ideal though because it fires EVERY TIME route changes...
+    //   // I believe I could add a conditional i.e., if(route.params.type) { watchEffect(() => ...)}
+    //   // UPDATE No conditional needed! Just be more granular i.e., route.params.type instead of just route.params
+    //   // console.log("watchEffect ran! route.params.type changed!", route.params.type);
+    //   // Q: Will it track my props.type change? I don't believe so since they're coming from parent Dashboard...
+    //   // A: Yes! Interesting... it's because my cards are wrapped with the same router-links!
+    //   console.log("watchEffect ran! props.type changed!", props.type);
+
+    //   // Now let's see if we can refetch data from FS...
+    //   // ===== Re-executing getCollection() + FS query =====
+    //   // NOTE Seems I MUST have an initial getCollection() OUTSIDE of watchEffect()
+    //   // Otherwise it errors saying it can't find transactions even though they're defined here.
+    //   // Therefore, I'm making another getCollection() inside but with a new variable name
+    //   // e.g., (Initial vs. Updated). This means I need to do some v-if logic with these two
+    //   // arrays of documents.
+    //   // A: CAN'T DO THIS! These inner scoped vars can't be found and returned by setup()!
+    //   // let {
+    //   //   documents: transactionsQueriedUpdatedOnWatchEffect,
+    //   //   error: errorGetCollectionQueriedUpdatedOnWatchEffect,
+    //   // } = await getCollection(`members/${props.id}/transactions`, [
+    //   //   "accountType",
+    //   //   "==",
+    //   //   props.type,
+    //   // ]);
+    //   // console.log(
+    //   //   "transactionsQueriedUpdatedOnWatchEffect.value",
+    //   //   transactionsQueriedUpdatedOnWatchEffect.value
+    //   // );
+
+    //   // return (
+    //   //   await transactionsQueriedUpdatedOnWatchEffect,
+    //   //   errorGetCollectionQueriedUpdatedOnWatchEffect
+    //   // );
+
+    //   // ===== Force a reload/rerender/refresh of the page =====
+    //   // NOTE I noticed that after clicking a new account.type, if I make a code change and save,
+    //   // the hot-reloading will refresh the page and my recent activity table updates with the right
+    //   // account.type displayed!
+    //   // Q: What's the best way to reload/rerender/refresh a page in Vue?
+    //   // A: Some ways are better than others. this.$forceUpdate() or :key seems to be preferred
+    //   // https://michaelnthiessen.com/force-re-render/
+    //   // NOTE I tried the :key="type" approach by wrapping a <div :key="type"> around entire recent
+    //   // activity table. No luck.
+    //   // NOTE Using this.$forceUpdate() is only available inside methods: Options API
+    //   // Let's try using a router instance to reload/reroute
+    //   // location.reload() // BAD! Infinite loop terrible approach!
+    //   // Q: What about router.push?
+    //   // A: Nope!
+    //   // router.push({ name: "MemberAccountsTransactionsDetails" }); // Nope
+    //   // Q: What about router.push with params?
+    //   // A: Nope! Doesn't seem to matter....
+    //   // router.push({
+    //   //   name: "MemberAccountsTransactionsDetails",
+    //   //   params: { id: props.id, type: props.type },
+    //   // });
+    //   // router.replace({ name: "MemberAccountsTransactionsDetails" }); // Nope
+    // });
+
+    // ======== Using Composable (No FS Query) =======
+    // ==== IMPORTANT: Everything below is troubleshooting. Lots learned but nothing ever worked!
+    // Let's get our member's transactions collection
+    // Q: Use props.id or member.value.id?
+    // A: Use props.id! I already have it so don't have to wait for member
+    // A: member.value?.id doesn't load as fast or at all if not within v-if
+    const {
+      documents: transactions,
+      error: errorGetCollection,
+    } = getCollection(`members/${props.id}/transactions`); // Works!
+    // console.log("transactions", transactions.value);
+    // console.log("props", props);
+
+    // Q: How could I make my transactions table update based on which account.type is clicked?
+    // Could I get all transactions and somehow use computed() along with route.params?
+    // const route = useRoute();
+    // Q: Do I need to watch() my route? Or will route.params auto update when I click a different card?
+    // A: Don't think it's needed. route.params already captures the changes instantly.
     // const routeParamsComputed = computed(() => route.params); // ComputedRef<Record<string, string | string[]>>
-    // // Q: What about watching the route.params changes and THEN doing the filter? This is what's changing, NOT
-    // // my original transactions Ref since I only request ALL transactions ONCE...
+    // Q: What about watching the route.params changes and THEN doing the filter? This is what's changing, NOT
+    // my original transactions Ref since I only request ALL transactions ONCE...
     // const routeParamsComputedFilteredTransactions = computed(
     //   () => transactions.value?.filter((t) => console.log(t)) // Proxy like below...
     // );
-    // // Q: What about making a new getCollection() request whenever route.params change,
-    // // and pass the new route.params.type to the query parameter?
-    // // A: Potential? Template displays the {"documents": {"_rawValue": [{"accountType": "spending", ...}]}}
+    // Q: What about making a new getCollection() request whenever route.params change,
+    // and pass the new route.params.type to the query parameter?
+    // A: Potential? Template displays the {"documents": {"_rawValue": [{"accountType": "spending", ...}]}}
     // const computedTransactionsUsingGetCollectionWithRouteParams = computed(
     //   () =>
     //     getCollection(`members/${props.id}/transactions`, [
@@ -686,24 +706,24 @@ export default defineComponent({
     //       route.params.type,
     //     ]) // NOTE You can chain documents.value on this but it BLOWS up.
     // ); // {"documents": {"_rawValue": null, ..., "_value": null}} Doesn't seem to get any data...
-    // // console.log(
-    // //   "computedTransactionsUsingGetCollectionWithRouteParams.value: ",
-    // //   computedTransactionsUsingGetCollectionWithRouteParams.value
-    // // ); // {documents: RefImpl, error: RefImpl}
-    // // console.log(
-    // //   "computedTransactionsUsingGetCollectionWithRouteParams.value.documents: ",
-    // //   computedTransactionsUsingGetCollectionWithRouteParams.value.documents
-    // // ); // RefImpl {_rawValue: null ..., _value: Proxy}
-    // // console.log(
-    // //   "computedTransactionsUsingGetCollectionWithRouteParams.value.documents.value: ",
-    // //   computedTransactionsUsingGetCollectionWithRouteParams.value.documents
-    // //     .value
-    // // ); // null
+    // console.log(
+    //   "computedTransactionsUsingGetCollectionWithRouteParams.value: ",
+    //   computedTransactionsUsingGetCollectionWithRouteParams.value
+    // ); // {documents: RefImpl, error: RefImpl}
+    // console.log(
+    //   "computedTransactionsUsingGetCollectionWithRouteParams.value.documents: ",
+    //   computedTransactionsUsingGetCollectionWithRouteParams.value.documents
+    // ); // RefImpl {_rawValue: null ..., _value: Proxy}
+    // console.log(
+    //   "computedTransactionsUsingGetCollectionWithRouteParams.value.documents.value: ",
+    //   computedTransactionsUsingGetCollectionWithRouteParams.value.documents
+    //     .value
+    // ); // null
 
-    // // Q: What about making a new getCollection() request whenever route.params change,
-    // // and pass the new route.params.type to the query parameter?
-    // // NOTE: This is same as above section but this one I'm destructuring my getCollection()
-    // // A: Same as above W/O destructuring basically.
+    // Q: What about making a new getCollection() request whenever route.params change,
+    // and pass the new route.params.type to the query parameter?
+    // NOTE: This is same as above section but this one I'm destructuring my getCollection()
+    // A: Same as above W/O destructuring basically.
     // const computedTransactionsUsingGetCollectionDestructuredWithRouteParams = computed(
     //   () => {
     //     // Let's destructure the composable
@@ -714,6 +734,28 @@ export default defineComponent({
     //     return documents; // NOTE Same as above W/O destructuring. You can chain documents.value on this but it BLOWS up.
     //   }
     // );
+
+    // UPDATE Going to try to create a function that does the filtering in JS
+    // rather than using the FS query/.where() function. I already have all the transactions
+    // so hoping I can just create a function to perform the filtering. Perhaps pair this
+    // with computed(), watchEffect() and/or onUpdated().
+    // NOTE Shaun did something similar in live-chat using computed() and .map()
+    const computedTransactionsWithComposableApplyingFilter = computed(() => {
+      if (transactions.value) {
+        // Now only when we have documents will it fire this internal code
+        // Want to return a new updated/filtered array based on the account type
+        transactions.value.filter((transaction) => {
+          // let transactionsAccountType = transaction['accountType']; // Error
+          // let transactionsAccountType = transaction.accountType; // Error
+          // let transactionData = { ...transaction }; // Doesn't error... but it's the big FS object
+          let transactionData = transaction.data(); // Doesn't error... here, but does in browser: TE: transaction.data is not a function
+          // return transactionData["accountType"] == "savings";
+          return transactionData.accountType == "savings";
+          // return transactionData["accountType"] == props.type;
+          // return transactionData.accountType == props.type; // Error 'accountType' does not exist
+        });
+      }
+    });
 
     // // ========== Not using Composable but FS directly =========
     // // Q: What if I don't use getCollection but just db directly?
@@ -799,8 +841,9 @@ export default defineComponent({
 
     return {
       member,
-      // transactions,
-      transactionsQueriedInitial,
+      transactions,
+      computedTransactionsWithComposableApplyingFilter,
+      // transactionsQueriedInitial,
       // transactionsQueriedUpdatedOnWatchEffect,
       // filteredTransactions,
       // routeParamsComputed,
@@ -811,7 +854,7 @@ export default defineComponent({
       // computedTransactionsWithoutComposableAwaitPromiseAll,
       errorGetDocument,
       // errorGetCollection,
-      errorGetCollectionQueriedInitial,
+      // errorGetCollectionQueriedInitial,
       // errorGetCollectionQueriedUpdatedOnWatchEffect,
       format,
     };
