@@ -78,25 +78,26 @@
         <!-- More items... -->
       </ul>
 
-      <nav
-        class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200"
-        aria-label="Pagination"
-      >
-        <div class="flex justify-between flex-1">
-          <a
-            href="#"
-            class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500"
-          >
-            Previous
-          </a>
-          <a
-            href="#"
-            class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500"
-          >
-            Next
-          </a>
-        </div>
-      </nav>
+      <!-- Disabling Pagination buttons for now -->
+      <!-- <nav -->
+      <!--   class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200" -->
+      <!--   aria-label="Pagination" -->
+      <!-- > -->
+      <!--   <div class="flex justify-between flex-1"> -->
+      <!--     <a -->
+      <!--       href="#" -->
+      <!--       class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500" -->
+      <!--     > -->
+      <!--       Previous -->
+      <!--     </a> -->
+      <!--     <a -->
+      <!--       href="#" -->
+      <!--       class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:text-gray-500" -->
+      <!--     > -->
+      <!--       Next -->
+      <!--     </a> -->
+      <!--   </div> -->
+      <!-- </nav> -->
     </div>
 
     <!-- Activity table (small breakopoint and up) -->
@@ -218,32 +219,39 @@
               class="flex items-center justify-between px-4 py-3 bg-white border-t border-gray-200 sm:px-6"
               aria-label="Pagination"
             >
-              <div class="hidden sm:block">
+              <div v-if="transactions.length > 0" class="hidden sm:block">
                 <p class="text-sm text-gray-700">
                   Showing
-                  <span class="font-medium">1</span>
-                  to
-                  <span class="font-medium">10</span>
-                  of
+                  <!-- <span class="font-medium">1</span> -->
+                  <!-- to -->
+                  <!-- <span v-if="transactionsCount < 10" class="font-medium">{{ -->
+                  <!--   transactionsCount -->
+                  <!-- }}</span> -->
+                  <!-- <span v-else class="font-medium">10</span> -->
+                  <!-- of -->
                   <!-- Make results a calculated total of transactions -->
-                  <span class="font-medium">20</span>
+                  <span class="font-medium">{{ transactionsCount }}</span>
                   results
                 </p>
               </div>
-              <div class="flex justify-between flex-1 sm:justify-end">
-                <a
-                  href="#"
-                  class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Previous
-                </a>
-                <a
-                  href="#"
-                  class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50"
-                >
-                  Next
-                </a>
+              <div v-else class="hidden sm:block">
+                <p class="text-sm text-gray-700">No transactions recorded</p>
               </div>
+              <!-- Disabling Pagination buttons for now -->
+              <!-- <div class="flex justify-between flex-1 sm:justify-end"> -->
+              <!--   <a -->
+              <!--     href="#" -->
+              <!--     class="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" -->
+              <!--   > -->
+              <!--     Previous -->
+              <!--   </a> -->
+              <!--   <a -->
+              <!--     href="#" -->
+              <!--     class="relative inline-flex items-center px-4 py-2 ml-3 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50" -->
+              <!--   > -->
+              <!--     Next -->
+              <!--   </a> -->
+              <!-- </div> -->
             </nav>
           </div>
         </div>
@@ -253,7 +261,14 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, onUnmounted, onUpdated } from "vue";
+import {
+  defineComponent,
+  computed,
+  watch,
+  onMounted,
+  onUnmounted,
+  onUpdated,
+} from "vue";
 import { format } from "date-fns";
 export default defineComponent({
   name: "TransactionsDetailsTable",
@@ -264,7 +279,23 @@ export default defineComponent({
     onUnmounted(() => console.log("UNMOUNTED"));
     onUpdated(() => console.log("UPDATED"));
 
-    return { format };
+    // Get a total count of transactions for Pagination
+    // Using computed()
+    const transactionsCount = computed(() => {
+      console.log("transactionCount triggered!");
+      if (props.transactions) {
+        console.log("props.transactions.length: ", props.transactions.length);
+        return props.transactions.length;
+      }
+    });
+    // Using watch()
+    // UPDATE It prints in template: () => { Object(_vue_reactivity__WEBPACK....)}
+    // const transactionsCountWatch = watch(props.transactions, () => {
+    //   console.log("transactionsCountWatch triggered!");
+    //   return props.transactions.length;
+    // });
+
+    return { transactionsCount, format };
   },
 });
 </script>
