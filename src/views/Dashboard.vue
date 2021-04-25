@@ -3,6 +3,9 @@
   <header class="bg-white shadow-sm">
     <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
       <h1 class="text-lg leading-6 font-semibold text-gray-900">Dashboard</h1>
+      <div v-if="membersFiltered">
+        <p>membersFiltered</p>
+      </div>
     </div>
   </header>
   <main class="bg-indigo-100">
@@ -58,17 +61,31 @@
 
 <script lang="ts">
 import { defineComponent, ref } from "vue";
+import { auth } from "@/firebase/config";
 import Navbar from "@/components/Navbar.vue";
 import MemberAccountsTable from "@/components/MemberAccountsTable.vue";
 import getCollection from "@/composables/getCollection";
+import getCollectionWithQuery from "@/composables/getCollectionWithQuery";
 
 export default defineComponent({
   name: "Dashboard",
   components: { Navbar, MemberAccountsTable },
   setup() {
     const { error, documents: members } = getCollection("members");
+    // FIXME Need to filter members by auth user (i.e., matching trackerOwner)
+    // May need to use the getCollectionWithQuery() composable instead
+    const {
+      error: membersError,
+      documents: membersFiltered,
+    } = getCollectionWithQuery("members", [
+      "trackerOwner",
+      "==",
+      "KuoAxq2TnyeVYAUOct5QbLHcyat1", // `${auth.currentUser?.uid}`,
+    ]);
+    console.log("auth.currentUser: ", auth.currentUser);
+    console.log("membersFiltered: ", membersFiltered.value);
 
-    return { error, members };
+    return { error, members, membersFiltered };
   },
 });
 </script>
